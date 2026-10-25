@@ -157,7 +157,8 @@ export const DEFAULT_WISH = {
   finish: 'radiance',
   hideMemory: true,
   secret: true,
-  particles: true
+  particles: true,
+  soundscape: 'starlight'
 };
 
 export function getTheme(id) {

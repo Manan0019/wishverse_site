@@ -1,5 +1,6 @@
 import { DEFAULT_WISH, THEMES, TONES, FINISHES, RELATIONS } from '../data/themes.js';
 import { getTemplate } from '../data/templates.js';
+import { safeSoundscape } from './soundscapes.js';
 
 const MAX_LINK_LENGTH = 4200;
 const clip = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
@@ -21,7 +22,8 @@ export function sanitizeWish(input = {}) {
     memory: clip(input.memory, 100),
     secret: Boolean(input.secret),
     hideMemory: input.hideMemory === undefined ? false : Boolean(input.hideMemory),
-    particles: Boolean(input.particles)
+    particles: Boolean(input.particles),
+    soundscape: safeSoundscape(input.soundscape)
   };
 }
 

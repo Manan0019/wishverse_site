@@ -58,3 +58,19 @@ const broken = { getItem: () => { throw new Error('denied'); }, setItem: () => {
 assert.deepEqual(readDrafts(broken), []);
 assert.equal(saveDraft('blocked', sample, broken), null);
 console.log('PASS: 24 templates, 72 appearance combinations, source art, backward compatibility, Unicode, secure link sanitization, drafts save/load/delete, blocked storage handling');
+
+// Phase 6: media-free links, validated soundscape, and offline keepsake escaping.
+const { safeSoundscape, SOUNDSCAPES } = await import('../src/lib/soundscapes.js');
+const { makeKeepsakeHtml } = await import('../src/lib/memory.js');
+assert.equal(SOUNDSCAPES.length,4);
+assert.equal(safeSoundscape('warmth'),'warmth');
+assert.equal(safeSoundscape('<script>'),'silent');
+const memoryWish={...DEFAULT_WISH,to:'<img src=x onerror=alert(1)>',message:'Me & You <3',soundscape:'warmth'};
+const secure=makeKeepsakeHtml(memoryWish,{});
+assert.ok(secure.includes('&lt;img src=x onerror=alert(1)&gt;'));
+assert.ok(!secure.includes('<script'));
+assert.ok(secure.includes("default-src 'none'"));
+assert.equal(decodeWish(encodeWish(memoryWish)).soundscape,'warmth');
+const older={...memoryWish}; delete older.soundscape;
+assert.equal(decodeWish(encodeWish(older)).soundscape,'silent');
+console.log('PASS: Phase 6 soundscapes, legacy links and offline keepsake escaping');

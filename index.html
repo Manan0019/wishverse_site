@@ -54,7 +54,7 @@
       <div class="hero-copy">
         <div class="eyebrow"><span class="eyebrow-glyph">✦</span> PREMIUM PERSONALIZED GREETINGS</div>
         <h1 id="hero-title">Every feeling<br /><em>deserves a <span class="hero-underline">beautiful story</span>.</em></h1>
-        <p class="hero-sub">Discover 24 curated card designs across six occasions, then make every detail personal. Save drafts, create memories, and share a moment they can feel.</p>
+        <p class="hero-sub">Discover 24 curated designs across six occasions. Personalize each wish, add a photo and voice memory, and turn it into a keepsake they can treasure.</p>
         <div class="hero-actions"><a href="#studio" class="button button-primary"><svg class="ico"><use href="#i-magic"/></svg> Build a premium wish <svg class="ico"><use href="#i-arrow"/></svg></a><a href="#occasions" class="button button-quiet">Explore the worlds <span aria-hidden="true">↗</span></a></div>
         <div class="hero-meta"><div class="hero-mini-stars">✦ ✳ ✶</div><span>More than “Happy Birthday”. More than “Happy Diwali”.<br />Every occasion deserves its own atmosphere.</span></div>
       </div>
@@ -101,15 +101,40 @@
             <label class="switch-line" for="secretToggle"><span class="switch-icon">✉</span><span class="switch-copy"><strong>Secret reveal</strong><small>Let the recipient unwrap the card like a surprise.</small></span><input class="switch-input" type="checkbox" id="secretToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
             <label class="switch-line" for="hideMemoryToggle"><span class="switch-icon">♡</span><span class="switch-copy"><strong>Sealed memory</strong><small>Let them tap to discover your personal note.</small></span><input class="switch-input" type="checkbox" id="hideMemoryToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
             <label class="switch-line" for="particlesToggle"><span class="switch-icon">✳</span><span class="switch-copy"><strong>Celebration sparkles</strong><small>Add a magical burst when the card opens.</small></span><input class="switch-input" type="checkbox" id="particlesToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
-            <div class="editor-divider"></div><div class="editor-step step-2">03 — SHARE IT BEAUTIFULLY</div>
-            <div class="editor-actions"><button type="button" class="button button-primary button-full" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copy premium link <svg class="ico trailing"><use href="#i-arrow"/></svg></button><button type="button" class="button whatsapp-button button-full" id="shareWhatsapp"><svg class="ico"><use href="#i-send"/></svg> Share on WhatsApp <svg class="ico trailing"><use href="#i-arrow-up"/></svg></button><div class="minor-actions"><button type="button" id="downloadPng"><svg class="ico"><use href="#i-download"/></svg> Save premium PNG</button><button type="button" id="previewWish"><svg class="ico"><use href="#i-eye"/></svg> Preview recipient view</button></div></div>
+            <div class="editor-divider"></div>
+            <section class="memory-studio" aria-labelledby="memoryStudioTitle">
+              <div class="memory-studio-top"><span class="editor-step step-2">03 — BUILD A MEMORY</span><span class="memory-badge">PHASE 6 · MEMORY THEATRE</span></div>
+              <h3 id="memoryStudioTitle">Make the moment <em>unmistakably theirs.</em></h3>
+              <p class="memory-studio-sub">Add one meaningful photo, a short personal voice note, and your soundtrack. All media stays on this device unless you intentionally export it.</p>
+              <div class="media-grid">
+                <div class="media-tile">
+                  <span class="media-tile-icon" aria-hidden="true">▧</span><strong>A picture worth keeping</strong>
+                  <p>Choose a photo to become the centrepiece of your keepsake.</p>
+                  <label class="media-pick" for="photoInput">Choose a photo</label><input id="photoInput" type="file" accept="image/*" class="visually-hidden-input" />
+                  <div class="photo-mini" id="photoMini" hidden><img id="photoThumb" alt="Selected memory photo preview"/><button type="button" id="removePhoto">Remove photo</button></div>
+                  <span class="media-help" id="photoStatus" role="status">No photo selected · up to 8 MB</span>
+                </div>
+                <div class="media-tile">
+                  <span class="media-tile-icon" aria-hidden="true">◉</span><strong>Your voice, their smile</strong>
+                  <p>Record a 15-second message, or attach a short audio file.</p>
+                  <div class="voice-actions"><button type="button" id="recordVoice" class="media-pick">Record voice</button><button type="button" id="stopVoice" disabled>Stop</button></div>
+                  <label class="media-audio-label" for="voiceInput">Or choose an audio recording</label><input id="voiceInput" type="file" accept="audio/webm,audio/ogg,audio/mp4,audio/mpeg,audio/wav" />
+                  <audio id="voicePreview" controls preload="metadata" hidden></audio><button type="button" id="removeVoice" class="media-remove" hidden>Remove recording</button>
+                  <span class="media-help" id="voiceStatus" role="status">No voice message · 15 seconds max</span>
+                </div>
+              </div>
+              <fieldset class="theme-fieldset soundscape-fieldset"><legend>A TINY ORIGINAL SOUNDTRACK</legend><div class="soundscape-options" id="soundscapeOptions"></div><button type="button" class="secondary-inline" id="playSoundscape">♫ Preview sound</button></fieldset>
+              <div class="memory-share-hint"><strong>How do photo + voice sharing work?</strong><p>Normal Wishverse links share your card text, theme and soundtrack choice only. For photo and voice, download a self-contained <strong>Keepsake HTML</strong> file and send it as an attachment. Media is never silently uploaded.</p></div>
+            </section>
+            <div class="editor-divider"></div><div class="editor-step step-2">04 — SHARE IT BEAUTIFULLY</div>
+            <div class="editor-actions"><button type="button" class="button button-primary button-full" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copy premium link <svg class="ico trailing"><use href="#i-arrow"/></svg></button><button type="button" class="button whatsapp-button button-full" id="shareWhatsapp"><svg class="ico"><use href="#i-send"/></svg> Share on WhatsApp <svg class="ico trailing"><use href="#i-arrow-up"/></svg></button><div class="minor-actions"><button type="button" id="downloadPng"><svg class="ico"><use href="#i-download"/></svg> Save premium PNG</button><button type="button" id="previewWish"><svg class="ico"><use href="#i-eye"/></svg> Preview recipient view</button><button type="button" id="downloadKeepsake"><svg class="ico"><use href="#i-download"/></svg> Download memory keepsake (.html)</button></div></div>
             <section class="draft-station" aria-labelledby="draftTitle">
               <div class="draft-title-row"><div><span class="atelier-kicker">YOUR LITTLE ATELIER</span><h3 id="draftTitle">Keep your creations.</h3></div><span class="draft-local">ON THIS DEVICE ONLY</span></div>
               <div class="draft-add"><label class="sr-only" for="draftName">Name your saved draft</label><input id="draftName" type="text" maxlength="44" autocomplete="off" placeholder="Name this draft (e.g. Mum's Diwali wish)" /><button type="button" id="saveDraft">Save draft</button></div>
               <div class="draft-list" id="draftList" aria-live="polite"></div>
-              <p class="draft-hint">Saved only in this browser — not synced between devices. Do not use for sensitive messages on a shared computer.</p>
+              <p class="draft-hint">Saved text and design only, in this browser. Photos and voice are not saved in drafts. Use Keepsake export to preserve media.</p>
             </section>
-            <p class="editor-note"><svg class="ico"><use href="#i-heart"/></svg> Sharing links contain readable, encoded names and messages. Only include details you are comfortable sharing.</p>
+            <p class="editor-note"><svg class="ico"><use href="#i-heart"/></svg> Links encode names and messages, but never include your photo or voice. Anyone with the link can read its text. For media, send the downloadable Keepsake file.</p>
           </div>
           <div class="preview-panel"><div class="preview-heading"><div><span class="preview-live-dot"></span> YOUR OCCASION WORLD</div><span>PREVIEW / TEMPLATE UNIVERSE</span></div>
             <div class="preview-meta-bar"><span><strong id="previewTheme">BIRTHDAY</strong> UNIVERSE</span><span id="previewTone">HEARTFELT</span><span id="previewOccasionLine">Confetti • Cake • Glow</span><span id="previewTemplate">CONFETTI ROYALE</span></div>
@@ -123,6 +148,7 @@
               </div>
             </div>
             <div class="preview-foot"><span>✦ PREMIUM OCCASION EXPERIENCE</span><span><span class="pulse-circle"></span> LOOKING BEAUTIFUL</span></div>
+            <section class="memory-preview" id="memoryPreview" hidden><span>YOUR MEMORY CHAPTER</span><img id="memoryPreviewPhoto" alt="Selected personal photo" hidden/><p id="memoryPreviewCaption">A photo and a few words make everything feel closer.</p></section>
             <p class="preview-hint">Try changing the occasion and tone — the visual world updates immediately.</p>
           </div>
         </div>
@@ -173,7 +199,7 @@
           </div>
         </div>
       </div>
-      <div class="recipient-opened" id="recipientOpened" hidden><span class="recipient-kicker">✦ A PREMIUM WISH, JUST FOR YOU ✦</span><div class="opened-card theme-birthday scene-birthday" data-layout="illustrated" id="openedCard"><img class="opened-illustration" id="openedIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="opened-ornament" id="openedMotif">✳</div><span id="openedOverline">THE GRAND BIRTHDAY SOIRÉE · HEARTFELT</span><div class="opened-relation" id="openedRelation">FOR MY BEST FRIEND</div><h2 id="openedName">Aarohi</h2><h3 id="openedGreeting">Happy Birthday</h3><p id="openedMessage"></p><button type="button" class="opened-memory is-sealed" id="memoryReveal" aria-expanded="false"><span class="sealed-label" id="memorySealLabel">✦ A little secret is waiting. Tap to reveal.</span><span class="memory-revealed" id="openedMemory">A whole day that looks like joy.</span></button><div class="opened-signoff">With love, <strong id="openedFrom">Manan</strong></div></div><div class="recipient-reactions"><button type="button" class="button reaction-button" id="moreSparkles"><svg class="ico"><use href="#i-sparkle"/></svg> Celebrate again</button><button type="button" class="button button-primary" id="makeOneBack">Make one in return <svg class="ico"><use href="#i-arrow"/></svg></button></div></div>
+      <div class="recipient-opened" id="recipientOpened" hidden><span class="recipient-kicker">✦ A PREMIUM WISH, JUST FOR YOU ✦</span><div class="opened-card theme-birthday scene-birthday" data-layout="illustrated" id="openedCard"><img class="opened-illustration" id="openedIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="opened-ornament" id="openedMotif">✳</div><span id="openedOverline">THE GRAND BIRTHDAY SOIRÉE · HEARTFELT</span><div class="opened-relation" id="openedRelation">FOR MY BEST FRIEND</div><h2 id="openedName">Aarohi</h2><h3 id="openedGreeting">Happy Birthday</h3><p id="openedMessage"></p><button type="button" class="opened-memory is-sealed" id="memoryReveal" aria-expanded="false"><span class="sealed-label" id="memorySealLabel">✦ A little secret is waiting. Tap to reveal.</span><span class="memory-revealed" id="openedMemory">A whole day that looks like joy.</span></button><div class="opened-signoff">With love, <strong id="openedFrom">Manan</strong></div></div><section class="recipient-memory-theatre" id="recipientMemoryTheatre" hidden><div class="recipient-memory-top"><span>✦ YOUR MEMORY THEATRE ✦</span><strong>One more thing, just for you.</strong></div><img id="recipientMemoryPhoto" alt="A photo memory sent with this greeting" hidden/><audio id="recipientMemoryVoice" controls preload="metadata" hidden></audio><p id="recipientMemoryCaption">A little moment worth holding onto.</p></section><div class="recipient-reactions"><button type="button" class="button reaction-button" id="moreSparkles"><svg class="ico"><use href="#i-sparkle"/></svg> Celebrate again</button><button type="button" class="button button-primary" id="makeOneBack">Make one in return <svg class="ico"><use href="#i-arrow"/></svg></button></div></div>
     </div><div class="recipient-footer">A LITTLE MAGIC FROM <strong>WISHVERSE ✦</strong></div><div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
   </div>
   <script type="module" src="/src/main.js"></script>

@@ -1,32 +1,27 @@
-# Wishverse Phase 5 — QA Report
+# Phase 6 QA — Memory Theatre
 
-Date: 2026-10-25
+## Completed and confirmed
 
-## Automated PASS
-- `npm test`: 24 unique templates, 4 per occasion, 3 finishes (72 template/finish combinations), name/Unicode sanitization, link round trips, fallback for older Phase 4 URLs, saved-draft storage with blocked-storage handling.
-- `node --check` for application and library JavaScript.
-- Playwright isolated browser preview, widths 1440, 390 and 320: no JavaScript page errors, no horizontal overflow.
-- Browser editing: template selection and changed visual layout reflected in live preview.
-- Browser editing: editing name/memory, switching occasion, selection persistence in saved drafts.
-- Browser editing: draft save/open/remove with injected in-memory storage (normal browser storage verified separately by unit tests).
-- Share action: link contains encoded wish; receiver selected template is shown after opening the Diwali diya ritual.
-- PNG action: download completed with template ID in filename; actual PNG tested at 1080x1350.
-- Recipient: sealed memory and reply-back flow remained operable.
-- Additional occasion ritual browser steps logged PASS individually during QA for birthday, anniversary, diwali, rakhi, newyear and christmas (all six); a combined full six-ritual stress loop did not terminate reliably in the sandbox, so it is not considered a full stress PASS.
+- Phase 5's 24 named templates, three finishes, old links and Unicode-safe share format preserved.
+- New soundscape choice added to text-only shared URL, with allowlisted validation.
+- Local JPEG photo resizing and preview, photo deletion.
+- Attached WAV voice playback and removal in browser tests; recording UI implemented with permission handling, 15-second limit and track cleanup.
+- Generated offline HTML with embedded photo and audio, escaped user-provided text and restrictive CSP. Opened standalone HTML preview in Chromium: photo rendered, audio source present.
+- PNG export now includes a small photo thumbnail, verified dimensions 1080 × 1350.
+- Recipient preview includes a separate photo/voice chapter. Existing interaction-to-open ritual was smoke-tested via skip-to-reveal on Phase 6 and previously validated in Phase 5.
+- Mobile widths 390 and 320 px: no page errors or horizontal overflow in Phase 6 scenarios.
+- Photo/voice binaries intentionally absent from shared URLs and drafts.
+- No backend, server upload or persistent media URL added.
 
-## Manual review / remaining gates
-- Publish to Cloudflare Pages and test true HTTPS navigation, iOS Safari / Chrome Android, actual clipboard and real WhatsApp sharing on devices.
-- Review accessibility with a screen reader.
-- Verify font fallback and final PNG composition for every supported Indian script, as browser coverage currently tests a limited subset.
-- Review privacy/legal/editorial policy requirements and set a working contact method before public launch.
-- Confirm all 72 visual variants with snapshot testing before calling the platform release-ready.
-- Personalized per-link social preview thumbnail and synced accounts are future backend work.
+## Automated commands and outcomes
 
-## Tested visual sample files
-- `/mnt/data/wishverse_phase5_template_gallery.png`
-- `/mnt/data/wishverse_phase5_card_editorial.png`
-- `/mnt/data/wishverse_phase5_card_minimal.png`
-- `/mnt/data/wishverse_phase5_card_diwali_celestial.png`
-- `/mnt/data/wishverse_phase5_recipient_card.png`
-- `/mnt/data/wishverse_phase5_export_diwali.png`
-- `/mnt/data/wishverse_phase5_studio_mobile.png`
+- `npm test` — PASS (Phase 5 regressions + Phase 6 soundscape, legacy-link and HTML escaping tests)
+- `python scripts/phase6-browser-qa.py` — PASS (desktop, mobile, small-mobile; upload/photo+audio, generated HTML, PNG download, opened recipient scene, no overflow)
+- Standalone generated keepsake opened separately in Chromium — PASS (embedded photo rendered and embedded audio present)
+
+## Limitations needing physical-device checks
+
+- Actual microphone permission and recording device quality; tests covered audio attachments, not a live microphone.
+- Whether particular mobile apps/email clients allow `.html` file attachments (many block them for security).
+- Cross-browser photo processing, especially Safari and low-memory mobile devices.
+- Production hosting, domain DNS, SSL, contact channel and policy review were not performed.

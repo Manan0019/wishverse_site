@@ -3,6 +3,8 @@ import { TEMPLATES, getTemplatesForTheme, getTemplate } from './data/templates.j
 import { readDrafts, saveDraft, deleteDraft } from './lib/drafts.js';
 import { sanitizeWish, getSharedWish, makeShareUrl, getWhatsAppUrl } from './lib/share.js';
 import { downloadWishPng } from './lib/download.js';
+import { photoFileToDataUrl, blobToDataUrl, downloadKeepsake, MAX_AUDIO_BYTES } from './lib/memory.js';
+import { SOUNDSCAPES, playSoundscape, safeSoundscape } from './lib/soundscapes.js';
 
 const $ = (id) => document.getElementById(id);
 const icon = (name) => `<svg class="ico"><use href="#i-${name}"/></svg>`;
@@ -13,6 +15,13 @@ let soundOn = false;
 let audioContext = null;
 let ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
 let ritualSession = 0;
+let media = { photo: '', voice: '' };
+let voiceRecorder = null;
+let voiceStream = null;
+let voiceTimer = null;
+let recordingStartedAt = 0;
+let mediaGeneration = 0;
+
 
 function applyTheme(element, theme) {
   if (!element) return;
@@ -179,6 +188,7 @@ function renderDrafts() {
     load.textContent = 'Open';
     load.setAttribute('aria-label', `Open ${entry.name}`);
     load.addEventListener('click', () => {
+      resetMedia();
       wish = {...entry.wish};
       updateInputs();
       buildTemplateGallery();
@@ -249,6 +259,7 @@ function updatePreview() {
   $('motifOne').textContent = theme.motifs[0];
   $('motifTwo').textContent = theme.motifs[1];
   $('motifThree').textContent = theme.motifs[2];
+  syncSoundscapeOptions();
 
   applyTheme($('wishCard'), theme);
   applyTheme($('previewOuter'), theme);
@@ -282,6 +293,7 @@ function updateInputs() {
   $('secretToggle').checked = wish.secret;
   $('particlesToggle').checked = wish.particles;
   $('hideMemoryToggle').checked = wish.hideMemory;
+  syncSoundscapeOptions();
   buildTemplateGallery();
   updatePreview();
 }
@@ -311,7 +323,7 @@ async function copyShareUrl() {
   try {
     if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
     await navigator.clipboard.writeText(url);
-    showToast('Your premium wish link is copied. Send it to someone special ✨');
+    showToast((media.photo||media.voice) ? 'Text-only link copied. Download a Keepsake file to share your photo and voice.' : 'Your premium wish link is copied. Send it to someone special ✨');
   } catch {
     showFallback(url);
   }
@@ -483,6 +495,7 @@ function revealCard() {
   $('recipientOpened').classList.add('is-visible');
   if (openedWish?.particles) burstStars(62);
   else if (soundOn) playChime();
+  if(soundOn && openedWish?.soundscape && openedWish.soundscape!=='silent') try{playSoundscape(audioContext,openedWish.soundscape);}catch{}
   $('moreSparkles').focus({ preventScroll: true });
 }
 
@@ -561,6 +574,8 @@ function setRecipientContent(input) {
   $('recipientRitual').hidden = true;
   $('recipientOpened').hidden = Boolean(sanitized.secret);
   $('recipientView').hidden = false;
+  if(input === wish) setPhotoUI();
+  else { $('recipientMemoryTheatre').hidden=true; $('recipientMemoryPhoto').hidden=true; $('recipientMemoryVoice').hidden=true; $('recipientMemoryVoice').pause(); }
   document.body.classList.add('viewer-active');
   if (!sanitized.secret && sanitized.particles) setTimeout(() => burstStars(36), 250);
   if (sanitized.secret) $('unwrapAction').focus({ preventScroll: true });
@@ -571,6 +586,7 @@ function openReceiver(input) { setRecipientContent(input); }
 
 function closeReceiver({ reply = false } = {}) {
   $('recipientView').hidden = true;
+  $('recipientMemoryVoice').pause();
   document.body.classList.remove('viewer-active');
   $('confettiLayer').replaceChildren();
   $('recipientRitual').hidden = true;
@@ -578,11 +594,125 @@ function closeReceiver({ reply = false } = {}) {
   ritualSession += 1;
   if (window.location.search.includes('wish=')) window.history.replaceState({}, '', window.location.pathname);
   if (reply && openedWish) {
+    resetMedia();
     wish = { ...DEFAULT_WISH, theme: openedWish.theme, tone: openedWish.tone, relation: openedWish.relation, finish: openedWish.finish, template: openedWish.template, hideMemory: openedWish.hideMemory, to: openedWish.from, from: '', memory: getTheme(openedWish.theme).headline, message: suggestedMessage(getTheme(openedWish.theme), openedWish.tone) };
     updateInputs();
     requestAnimationFrame(() => $('studio').scrollIntoView({ behavior: 'smooth' }));
     $('fromInput').focus({ preventScroll: true });
   }
+}
+
+function buildSoundscapeOptions() {
+  $('soundscapeOptions').innerHTML = SOUNDSCAPES.map(s => `<button type="button" class="soundscape-choice" data-soundscape="${s.id}" aria-pressed="false"><strong>${s.label}</strong><small>${s.caption}</small></button>`).join('');
+  $('soundscapeOptions').querySelectorAll('[data-soundscape]').forEach(btn => btn.addEventListener('click', () => {
+    wish.soundscape = safeSoundscape(btn.dataset.soundscape);
+    syncSoundscapeOptions();
+  }));
+}
+
+function syncSoundscapeOptions() {
+  document.querySelectorAll('[data-soundscape]').forEach(btn => {
+    const on=btn.dataset.soundscape===safeSoundscape(wish.soundscape);
+    btn.classList.toggle('active',on);
+    btn.setAttribute('aria-pressed',String(on));
+  });
+}
+
+function playSelectedSoundscape() {
+  if(safeSoundscape(wish.soundscape)==='silent') return showToast('Quiet magic is selected. Choose a melody to preview.');
+  try {
+    audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+    audioContext.resume?.();
+    playSoundscape(audioContext,wish.soundscape);
+  } catch { showToast('Audio is not available in this browser.'); }
+}
+
+function setPhotoUI() {
+  $('photoMini').hidden=!media.photo;
+  $('memoryPreview').hidden=!(media.photo||media.voice);
+  $('memoryPreviewPhoto').hidden=!media.photo;
+  $('recipientMemoryTheatre').hidden=!(media.photo||media.voice);
+  $('recipientMemoryPhoto').hidden=!media.photo;
+  if(media.photo) {
+    $('photoThumb').src=media.photo;
+    $('memoryPreviewPhoto').src=media.photo;
+    $('recipientMemoryPhoto').src=media.photo;
+  } else {
+    ['photoThumb','memoryPreviewPhoto','recipientMemoryPhoto'].forEach(id=>$(id).removeAttribute('src'));
+  }
+  $('photoStatus').textContent=media.photo?'Photo added · included in Keepsake HTML':'No photo selected · up to 8 MB';
+  $('voicePreview').hidden=!media.voice;
+  $('removeVoice').hidden=!media.voice;
+  $('recipientMemoryVoice').hidden=!media.voice;
+  $('voiceStatus').textContent=media.voice?'Voice message ready · included in Keepsake HTML':'No voice message · 15 seconds max';
+  if (media.voice){
+    $('voicePreview').src=media.voice;
+    $('recipientMemoryVoice').src=media.voice;
+  } else {
+    ['voicePreview','recipientMemoryVoice'].forEach(id=>{ $(id).pause(); $(id).removeAttribute('src'); $(id).load(); });
+  }
+}
+
+function resetMedia() {
+  mediaGeneration++;
+  stopRecording();
+  media={photo:'',voice:''};
+  $('photoInput').value='';$('voiceInput').value='';
+  setPhotoUI();
+}
+
+async function readAudioFile(file) {
+  if (!file) return;
+  const allowed=/^audio\/(webm|ogg|mp4|mpeg|wav)(?:;.*)?$/i;
+  if(!allowed.test(file.type)) throw new Error('Choose WebM, Ogg, MP4, MP3 or WAV audio.');
+  if(file.size>MAX_AUDIO_BYTES) throw new Error('Audio must be smaller than 2.2 MB.');
+  const data=await blobToDataUrl(file);
+  if(data.length>MAX_AUDIO_BYTES*1.5) throw new Error('Audio file is too large.');
+  media.voice=data;
+  setPhotoUI();
+}
+
+function stopRecording() {
+  if(voiceTimer){clearTimeout(voiceTimer);voiceTimer=null;}
+  if(voiceRecorder?.state==='recording') voiceRecorder.stop();
+  if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}
+  $('recordVoice').disabled=false;
+  $('stopVoice').disabled=true;
+}
+
+async function beginRecording() {
+  if(!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder==='undefined') {
+    showToast('Microphone recording is unsupported here. You can upload an audio file instead.'); return;
+  }
+  try {
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    voiceStream=stream;
+    const types=['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'];
+    const type=types.find(t=>MediaRecorder.isTypeSupported?.(t));
+    const recorder= type ? new MediaRecorder(stream,{mimeType:type}) : new MediaRecorder(stream);
+    voiceRecorder=recorder;
+    const chunks=[];
+    const currentMediaGeneration = mediaGeneration;
+    recorder.ondataavailable= e => {if(e.data?.size)chunks.push(e.data);};
+    recorder.onerror=()=>{showToast('Recording failed. Try attaching an audio file.');stopRecording();};
+    recorder.onstop=async()=>{
+      if(currentMediaGeneration!==mediaGeneration){stream.getTracks().forEach(t=>t.stop());return;}
+      if(voiceStream===stream) { stream.getTracks().forEach(t=>t.stop());voiceStream=null; }
+      const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
+      if(!blob.size) {showToast('No audio recorded. Try again.');return;}
+      if(blob.size>MAX_AUDIO_BYTES){showToast('Recording exceeded the file-size limit. Try again.');return;}
+      try {media.voice=await blobToDataUrl(blob);setPhotoUI();showToast('Voice message recorded ✦');}
+      catch{showToast('Could not process this audio.');}
+    };
+    recorder.start(); recordingStartedAt=Date.now();
+    $('recordVoice').disabled=true;$('stopVoice').disabled=false;
+    $('voiceStatus').textContent='Recording… tap Stop (maximum 15 seconds)';
+    voiceTimer=setTimeout(stopRecording,15000);
+  } catch {showToast('Microphone access was denied or unavailable. Audio upload still works.');stopRecording();}
+}
+
+function warnIfMediaOnLink() {
+  if(media.photo||media.voice) showToast('Link sent with text and design only. For photo/voice, download and send your Keepsake HTML file.');
 }
 
 function bindEvents() {
@@ -597,7 +727,7 @@ function bindEvents() {
     if (!record) return showToast('Could not save. This browser may block local storage.');
     $('draftName').value = '';
     renderDrafts();
-    showToast(`Saved “${record.name}” on this device.`);
+    showToast((media.photo||media.voice) ? `Draft “${record.name}” saved with text only. Download a Keepsake file to preserve media.` : `Saved “${record.name}” on this device.`);
   });
   $('draftName').addEventListener('keydown', (event) => {
     if (event.key === 'Enter') { event.preventDefault(); $('saveDraft').click(); }
@@ -618,15 +748,35 @@ function bindEvents() {
   });
   $('copyLink').addEventListener('click', copyShareUrl);
   $('shareWhatsapp').addEventListener('click', () => {
+    warnIfMediaOnLink();
     const url = getWhatsAppUrl(wish); const tab = window.open(url, '_blank', 'noopener,noreferrer'); if (!tab) window.location.assign(url);
   });
   $('downloadPng').addEventListener('click', async () => {
     const btn = $('downloadPng'); const old = btn.innerHTML; btn.disabled = true; btn.textContent = 'Creating your premium card…';
-    try { await document.fonts.ready; await downloadWishPng(wish); showToast('Your greeting PNG is ready to save.'); }
+    try { await document.fonts.ready; await downloadWishPng(wish,media.photo); showToast('Your greeting PNG is ready to save.'); }
     catch (error) { showToast('Couldn’t generate the PNG. Please try again.'); console.error(error); }
     finally { btn.disabled = false; btn.innerHTML = old; }
   });
   $('previewWish').addEventListener('click', () => openReceiver(wish));
+  $('downloadKeepsake').addEventListener('click', () => {
+    try {downloadKeepsake(wish,media);showToast('Keepsake downloaded. Send the .html file as an attachment ✦');}
+    catch(e){console.error(e);showToast('Could not export this keepsake.');}
+  });
+  $('photoInput').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    $('photoStatus').textContent='Preparing your photo…';
+    try{media.photo=await photoFileToDataUrl(file);setPhotoUI();showToast('Your photo is ready ✦');}
+    catch(error){$('photoInput').value='';setPhotoUI();showToast(error.message||'Could not open this photo.');}
+  });
+  $('removePhoto').addEventListener('click',()=>{media.photo='';$('photoInput').value='';setPhotoUI();});
+  $('voiceInput').addEventListener('change',async e=>{
+    try{await readAudioFile(e.target.files?.[0]);if(media.voice)showToast('Audio attachment ready ✦');}
+    catch(error){$('voiceInput').value='';showToast(error.message||'Could not read audio.');}
+  });
+  $('recordVoice').addEventListener('click',beginRecording);
+  $('stopVoice').addEventListener('click',stopRecording);
+  $('removeVoice').addEventListener('click',()=>{media.voice='';$('voiceInput').value='';setPhotoUI();});
+  $('playSoundscape').addEventListener('click',playSelectedSoundscape);
   $('fallbackClose').addEventListener('click', closeFallback);
   $('selectFallback').addEventListener('click', () => $('fallbackUrl').select());
   $('shareFallback').addEventListener('click', (event) => { if (event.target === $('shareFallback')) closeFallback(); });
@@ -692,7 +842,7 @@ function initFromSharedUrl() {
 function initYear() { const yearEl = $('year'); if (yearEl) yearEl.textContent = String(new Date().getFullYear()); }
 
 function init() {
-  buildThemeCards(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); bindEvents(); starField(); initYear(); updateInputs(); renderDrafts(); initFromSharedUrl();
+  buildThemeCards(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
 }
 
 init();

@@ -105,7 +105,7 @@ async function drawArtwork(ctx, theme, finish, preset) {
   }
 }
 
-export async function downloadWishPng(input) {
+export async function downloadWishPng(input, photoData = null) {
   const wish = sanitizeWish(input);
   const theme = getTheme(wish.theme);
   const tone = getTone(wish.tone);
@@ -119,6 +119,23 @@ export async function downloadWishPng(input) {
   background(c, theme, wish.finish, preset);
   drawTexture(c, wish.finish);
   await drawArtwork(c, theme, wish.finish, preset);
+
+  // Optional photo inset. Rendered entirely locally: never uploaded.
+  if (typeof photoData === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(photoData)) {
+    try {
+      const picture = new Image();
+      await new Promise((resolve,reject)=>{
+        picture.onload=resolve;picture.onerror=reject;picture.src=photoData;
+      });
+      const dx=456,dy=147,dw=168,dh=100;
+      const scale=Math.max(dw/picture.naturalWidth,dh/picture.naturalHeight);
+      const sw=dw/scale, sh=dh/scale, sx=(picture.naturalWidth-sw)/2, sy=(picture.naturalHeight-sh)/2;
+      c.save(); c.beginPath(); c.roundRect(dx,dy,dw,dh,12); c.clip();
+      c.drawImage(picture,sx,sy,sw,sh,dx,dy,dw,dh); c.restore();
+      c.strokeStyle='#fff9'; c.lineWidth=5;
+      c.beginPath();c.roundRect(dx,dy,dw,dh,12);c.stroke();
+    } catch { /* image decoration is optional; keep text-based card export working */ }
+  }
 
   const paper = wish.finish === 'heirloom' || preset.layout === 'minimal';
   const ink = paper ? '#4a2a3a' : '#fffaf4';
