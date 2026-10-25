@@ -1,5 +1,6 @@
 import { DEFAULT_WISH, THEMES, TONES, FINISHES, RELATIONS } from '../data/themes.js';
 import { getTemplate } from '../data/templates.js';
+import { safeLocale } from '../data/i18n.js';
 import { safeSoundscape } from './soundscapes.js';
 
 const MAX_LINK_LENGTH = 4200;
@@ -12,6 +13,7 @@ export function sanitizeWish(input = {}) {
   const finish = FINISHES.some((f) => f.id === input.finish) ? input.finish : DEFAULT_WISH.finish;
   return {
     theme,
+    lang: safeLocale(input.lang),
     template: getTemplate(input.template, theme).id,
     tone,
     finish,
@@ -50,7 +52,8 @@ export function decodeWish(value) {
 
 export function getSharedWish() {
   const url = new URL(window.location.href);
-  return decodeWish(url.searchParams.get('wish'));
+  const fragment = url.hash.startsWith('#wish=') ? url.hash.slice(6) : null;
+  return decodeWish(fragment) || decodeWish(url.searchParams.get('wish'));
 }
 
 export function makeShareUrl(wish) {
@@ -58,7 +61,8 @@ export function makeShareUrl(wish) {
   // Support local file / isolated-browser previews, where origin is 'null'.
   const base = origin && origin !== 'null' ? origin : 'https://greetings.mananbhayani.online';
   const url = new URL('/', base);
-  url.searchParams.set('wish', encodeWish(wish));
+  // Fragment does not travel in the HTTP request URL. Legacy ?wish links still decode.
+  url.hash = `wish=${encodeWish(wish)}`;
   return url.toString();
 }
 

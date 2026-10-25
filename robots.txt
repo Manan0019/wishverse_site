@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /*?wish=
 Sitemap: https://greetings.mananbhayani.online/sitemap.xml

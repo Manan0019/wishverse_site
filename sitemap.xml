@@ -1,6 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://greetings.mananbhayani.online/</loc></url>
-<url><loc>https://greetings.mananbhayani.online/about.html</loc></url>
-<url><loc>https://greetings.mananbhayani.online/privacy.html</loc></url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/about.html</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/privacy.html</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/birthday/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/birthday/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/birthday/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/anniversary/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/anniversary/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/anniversary/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/diwali/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/diwali/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/diwali/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/rakhi/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/rakhi/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/rakhi/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/newyear/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/newyear/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/newyear/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/occasions/christmas/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/hi/occasions/christmas/</loc>
+  </url>
+  <url>
+    <loc>https://greetings.mananbhayani.online/gu/occasions/christmas/</loc>
+  </url>
 </urlset>

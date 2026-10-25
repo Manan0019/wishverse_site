@@ -147,6 +147,7 @@ export const THEMES = [
 
 export const DEFAULT_WISH = {
   theme: 'birthday',
+  lang: 'en',
   template: 'birthday-1',
   to: 'Aarohi',
   from: 'Manan',

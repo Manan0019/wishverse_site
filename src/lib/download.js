@@ -1,6 +1,7 @@
 import { getTheme, getTone, getArtUrl } from '../data/themes.js';
 import { getTemplate } from '../data/templates.js';
 import { sanitizeWish } from './share.js';
+import { greetingFor } from '../data/i18n.js';
 
 const W = 1080;
 const H = 1350;
@@ -176,7 +177,7 @@ export async function downloadWishPng(input, photoData = null) {
   names.forEach((line, i) => centered(c, line, 417 + i * 83, `italic ${nameFont}px Georgia,serif`, ink, 780));
   const delta = names.length > 1 ? 72 : 0;
   const greetingY = 542 + delta;
-  centered(c, theme.greeting, greetingY, '600 57px "Space Grotesk",sans-serif', accent, 820);
+  centered(c, greetingFor(theme.id, wish.lang), greetingY, '600 48px "Noto Sans Gujarati","Noto Sans Devanagari","Space Grotesk",sans-serif', accent, 820);
 
   const maxMessageWidth = 780;
   let fontSize = wish.message.length > 200 ? 28 : wish.message.length > 145 ? 30 : 33;

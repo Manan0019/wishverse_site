@@ -5,6 +5,7 @@ import { sanitizeWish, getSharedWish, makeShareUrl, getWhatsAppUrl } from './lib
 import { downloadWishPng } from './lib/download.js';
 import { photoFileToDataUrl, blobToDataUrl, downloadKeepsake, MAX_AUDIO_BYTES } from './lib/memory.js';
 import { SOUNDSCAPES, playSoundscape, safeSoundscape } from './lib/soundscapes.js';
+import { tr, safeLocale, occasionLabel, greetingFor, suggestedMessageFor, isSuggestedMessage } from './data/i18n.js';
 
 const $ = (id) => document.getElementById(id);
 const icon = (name) => `<svg class="ico"><use href="#i-${name}"/></svg>`;
@@ -36,9 +37,62 @@ function applyTheme(element, theme) {
     .join(' ');
 }
 
-function suggestedMessage(theme, toneId) {
-  return theme.messages[toneId] || theme.messages.heartfelt;
+function suggestedMessage(theme, toneId, lang = wish.lang) {
+  return suggestedMessageFor(theme, toneId, lang);
 }
+
+function applyTranslations(lang) {
+  const labels = {
+    '#toInput': ['placeholder', lang === 'hi' ? 'उनका नाम' : lang === 'gu' ? 'તેમનું નામ' : 'Their name'],
+    '#fromInput': ['placeholder', lang === 'hi' ? 'आपका नाम' : lang === 'gu' ? 'તમારું નામ' : 'Your name'],
+    '#messageInput': ['placeholder', tr(lang,'msgPlaceholder')],
+    '#memoryInput': ['placeholder', tr(lang,'memoPlaceholder')]
+  };
+  for (const [selector, [attribute, value]] of Object.entries(labels)) document.querySelector(selector)?.setAttribute(attribute, value);
+  const targets = {
+    '#languageLabel': lang === 'hi' ? 'शुभकामना की भाषा' : lang === 'gu' ? 'શુભેચ્છાની ભાષા' : 'GREETING LANGUAGE',
+    '#guidesHeading': tr(lang,'occasionGuide'),
+    '#guidesDescription': tr(lang,'guidesDesc'),
+    '#copyLink': tr(lang,'copyLink'),
+    '#shareWhatsapp': tr(lang,'whatsapp'),
+    '#downloadPng': tr(lang,'download'),
+    '#previewWish': tr(lang,'preview'),
+    '#shuffleMessage': tr(lang,'refresh'),
+    '#downloadKeepsake': tr(lang,'keepsake')
+  };
+  // Preserve existing SVG icons and accessibility affordances by replacing only plain text nodes.
+  for (const [selector, label] of Object.entries(targets)) {
+    const element = document.querySelector(selector);
+    if (!element) continue;
+    const textNode = [...element.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    if (textNode) textNode.textContent = ' ' + label + ' ';
+    else if (!element.children.length) element.textContent = label;
+  }
+  document.documentElement.lang = lang;
+  document.body.dataset.lang = lang;
+}
+
+function changeGreetingLanguage(lang) {
+  const safe = safeLocale(lang), theme = getTheme(wish.theme);
+  const reset = !wish.message.trim() || isSuggestedMessage(theme, wish.message);
+  wish.lang = safe;
+  if (reset) { wish.message = suggestedMessage(theme, wish.tone, safe); $('messageInput').value = wish.message; }
+  applyTranslations(safe);
+  renderGuideLinks(safe);
+  updatePreview();
+}
+
+function renderGuideLinks(lang) {
+  const container = $('guideLinks');
+  container.replaceChildren();
+  for (const theme of THEMES) {
+    const link = document.createElement('a');
+    link.href = (lang === 'en' ? '/occasions/' : `/${lang}/occasions/`) + theme.id + '/';
+    link.textContent = occasionLabel(theme.id, lang) + ' ↗';
+    container.appendChild(link);
+  }
+}
+function buildGuideLinks() { renderGuideLinks(safeLocale(wish.lang)); }
 
 function buildThemeCards() {
   $('occasionGrid').innerHTML = THEMES.map((theme, index) => `
@@ -72,7 +126,7 @@ function buildTonePills() {
     button.addEventListener('click', () => {
       wish.tone = button.dataset.tone;
       const theme = getTheme(wish.theme);
-      if (!wish.message.trim() || Object.values(theme.messages).includes(wish.message)) {
+      if (!wish.message.trim() || isSuggestedMessage(theme, wish.message)) {
         wish.message = suggestedMessage(theme, wish.tone);
         $('messageInput').value = wish.message;
       }
@@ -214,7 +268,7 @@ function renderDrafts() {
 function selectTheme(id) {
   const previous = getTheme(wish.theme);
   const next = getTheme(id);
-  const shouldResetMessage = !wish.message.trim() || Object.values(previous.messages).includes(wish.message);
+  const shouldResetMessage = !wish.message.trim() || isSuggestedMessage(previous, wish.message);
   const shouldResetMemory = !wish.memory.trim() || wish.memory === DEFAULT_WISH.memory || THEMES.some((item) => item.headline === wish.memory);
   wish.theme = next.id;
   wish.template = getTemplatesForTheme(next.id)[0].id;
@@ -240,7 +294,7 @@ function updatePreview() {
   $('cardSender').textContent = normalized.from;
   $('cardThemeTag').textContent = theme.label;
   $('cardSymbol').textContent = theme.symbol;
-  $('cardTitle').textContent = theme.greeting;
+  $('cardTitle').textContent = greetingFor(theme.id, normalized.lang);
   $('cardMessage').textContent = normalized.message;
   $('cardRelation').textContent = `FOR MY ${normalized.relation.toUpperCase()}`;
   $('cardMemory').textContent = normalized.memory || theme.headline;
@@ -248,7 +302,7 @@ function updatePreview() {
   $('wishCard').dataset.finish = normalized.finish;
   $('wishCard').classList.toggle('name-long', normalized.to.length > 17);
   $('wishCard').classList.toggle('long-copy', normalized.message.length > 170 || (normalized.memory.length > 68 && normalized.message.length > 120));
-  $('previewTheme').textContent = theme.name.toUpperCase();
+  $('previewTheme').textContent = occasionLabel(theme.id, normalized.lang).toUpperCase();
   $('previewTone').textContent = `${tone.label.toUpperCase()} · ${normalized.finish.toUpperCase()}`;
   $('previewOccasionLine').textContent = theme.iconLabel;
   $('previewTemplate').textContent = preset.name.toUpperCase();
@@ -285,6 +339,9 @@ function updatePreview() {
 }
 
 function updateInputs() {
+  $('languageSelect').value = safeLocale(wish.lang);
+  applyTranslations(safeLocale(wish.lang));
+  renderGuideLinks(safeLocale(wish.lang));
   $('toInput').value = wish.to;
   $('fromInput').value = wish.from;
   $('relationInput').value = wish.relation;
@@ -550,12 +607,12 @@ function setRecipientContent(input) {
   applyTheme($('recipientView'), theme);
   applyTheme($('openedCard'), theme);
   applyTemplateStyle($('openedCard'), preset);
-  $('receiverFrom').textContent = `A GIFTED GREETING FROM ${sanitized.from.toUpperCase()}`;
+  $('receiverFrom').textContent = `${tr(sanitized.lang,'recipientGreeting')} · ${sanitized.from}`;
   $('receiverHello').replaceChildren(document.createTextNode(`${sanitized.to}, this one’s`), document.createElement('br'));
   const em = document.createElement('em'); em.textContent = 'crafted for you.'; $('receiverHello').appendChild(em);
   $('openedOverline').textContent = `${preset.name.toUpperCase()} · ${tone.label.toUpperCase()}`;
   $('openedName').textContent = sanitized.to;
-  $('openedGreeting').textContent = theme.greeting;
+  $('openedGreeting').textContent = greetingFor(theme.id, sanitized.lang);
   $('openedMessage').textContent = sanitized.message;
   $('openedFrom').textContent = sanitized.from;
   $('openedRelation').textContent = `FOR MY ${sanitized.relation.toUpperCase()}`;
@@ -570,6 +627,9 @@ function setRecipientContent(input) {
   $('memorySealLabel').hidden = !(sanitized.hideMemory && sanitized.memory);
   $('memoryReveal').disabled = !(sanitized.hideMemory && sanitized.memory);
   $('memoryReveal').hidden = !sanitized.memory;
+  $('unwrapAction').firstChild.textContent = tr(sanitized.lang, 'openMoment') + ' ';
+  $('ritualSkip').textContent = tr(sanitized.lang, 'revealNow');
+  $('makeOneBack').firstChild.textContent = tr(sanitized.lang,'returnWish') + ' ';
   $('recipientClosed').hidden = !sanitized.secret;
   $('recipientRitual').hidden = true;
   $('recipientOpened').hidden = Boolean(sanitized.secret);
@@ -592,10 +652,10 @@ function closeReceiver({ reply = false } = {}) {
   $('recipientRitual').hidden = true;
   ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
   ritualSession += 1;
-  if (window.location.search.includes('wish=')) window.history.replaceState({}, '', window.location.pathname);
+  if (getSharedWish()) window.history.replaceState({}, '', window.location.pathname);
   if (reply && openedWish) {
     resetMedia();
-    wish = { ...DEFAULT_WISH, theme: openedWish.theme, tone: openedWish.tone, relation: openedWish.relation, finish: openedWish.finish, template: openedWish.template, hideMemory: openedWish.hideMemory, to: openedWish.from, from: '', memory: getTheme(openedWish.theme).headline, message: suggestedMessage(getTheme(openedWish.theme), openedWish.tone) };
+    wish = { ...DEFAULT_WISH, lang: openedWish.lang, theme: openedWish.theme, tone: openedWish.tone, relation: openedWish.relation, finish: openedWish.finish, template: openedWish.template, hideMemory: openedWish.hideMemory, to: openedWish.from, from: '', memory: getTheme(openedWish.theme).headline, message: suggestedMessage(getTheme(openedWish.theme), openedWish.tone) };
     updateInputs();
     requestAnimationFrame(() => $('studio').scrollIntoView({ behavior: 'smooth' }));
     $('fromInput').focus({ preventScroll: true });
@@ -716,6 +776,7 @@ function warnIfMediaOnLink() {
 }
 
 function bindEvents() {
+  $('languageSelect').addEventListener('change', event => changeGreetingLanguage(event.target.value));
   $('surpriseTemplate').addEventListener('click', () => {
     const choices = getTemplatesForTheme(wish.theme).filter((preset) => preset.id !== wish.template);
     const next = choices[Math.floor(Math.random() * choices.length)];
@@ -824,6 +885,7 @@ function bindEvents() {
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      if (!$('mobileNav').hidden) { $('mobileNav').hidden = true; $('menuToggle').setAttribute('aria-expanded', 'false'); $('menuToggle').focus(); }
       if (!$('shareFallback').hidden) closeFallback();
       if (!$('recipientView').hidden) closeReceiver();
     }
@@ -836,13 +898,27 @@ function initFromSharedUrl() {
     const robots = document.createElement('meta');
     robots.name = 'robots'; robots.content = 'noindex,nofollow'; document.head.appendChild(robots);
     wish = { ...wish, ...shared }; updateInputs(); requestAnimationFrame(() => openReceiver(shared));
+    return;
   }
+  const params = new URLSearchParams(window.location.search);
+  const language = safeLocale(params.get('lang'));
+  const chosen = THEMES.find(theme => theme.id === params.get('occasion'));
+  wish.lang = language;
+  if (chosen) {
+    wish.theme = chosen.id;
+    wish.template = getTemplatesForTheme(chosen.id)[0].id;
+    wish.message = suggestedMessage(chosen, wish.tone, language);
+    wish.memory = chosen.headline;
+  } else if (language !== 'en') {
+    wish.message = suggestedMessage(getTheme(wish.theme), wish.tone, language);
+  }
+  updateInputs();
 }
 
 function initYear() { const yearEl = $('year'); if (yearEl) yearEl.textContent = String(new Date().getFullYear()); }
 
 function init() {
-  buildThemeCards(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
+  buildThemeCards(); buildGuideLinks(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
 }
 
 init();

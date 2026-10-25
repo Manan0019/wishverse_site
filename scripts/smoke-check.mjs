@@ -36,7 +36,7 @@ assert.equal(getTemplate('bad','rakhi').id,'rakhi-1');
 assert.equal(decodeWish('not~valid'),null);
 assert.equal(decodeWish('a'.repeat(4201)),null);
 assert.equal(sanitizeWish({theme:'diwali',message:'text',to:'  '}).to,'Someone special');
-assert.ok(makeShareUrl(sample).startsWith('https://greetings.mananbhayani.online/?wish='));
+assert.ok(makeShareUrl(sample).startsWith('https://greetings.mananbhayani.online/#wish='));
 assert.ok(getWhatsAppUrl(sample).startsWith('https://wa.me/?text='));
 // Phase 4 links, lacking a template field, remain valid and default to the first preset.
 const old = { ...sample };
@@ -74,3 +74,21 @@ assert.equal(decodeWish(encodeWish(memoryWish)).soundscape,'warmth');
 const older={...memoryWish}; delete older.soundscape;
 assert.equal(decodeWish(encodeWish(older)).soundscape,'silent');
 console.log('PASS: Phase 6 soundscapes, legacy links and offline keepsake escaping');
+
+// Phase 7: language and localized static guides.
+const { LANGUAGES, greetingFor, safeLocale, suggestedMessageFor } = await import('../src/data/i18n.js');
+assert.equal(LANGUAGES.length,3);
+assert.equal(safeLocale('garbled'),'en');
+assert.equal(greetingFor('diwali','gu'),'શુભ દિવાળી');
+assert.equal(greetingFor('birthday','hi'),'जन्मदिन मुबारक');
+const localized={...sample,lang:'gu'};
+assert.equal(decodeWish(encodeWish(localized)).lang,'gu');
+assert.equal(decodeWish(encodeWish(old)).lang,'en');
+assert.ok(suggestedMessageFor(getTheme('diwali'),'heartfelt','hi').includes('दीपावली'));
+for (const locale of ['en','hi','gu']) for (const theme of THEMES) {
+  const loc=locale==='en' ? `occasions/${theme.id}/index.html` : `${locale}/occasions/${theme.id}/index.html`;
+  assert.ok(existsSync(loc), loc);
+}
+assert.ok(existsSync('_headers'));
+assert.ok(existsSync('404.html'));
+console.log('PASS: 18 localized guides, language-aware greetings, backward compatible links, Cloudflare files');

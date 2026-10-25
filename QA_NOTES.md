@@ -1,27 +1,7 @@
-# Phase 6 QA — Memory Theatre
+# Phase 7 QA Evidence
 
-## Completed and confirmed
-
-- Phase 5's 24 named templates, three finishes, old links and Unicode-safe share format preserved.
-- New soundscape choice added to text-only shared URL, with allowlisted validation.
-- Local JPEG photo resizing and preview, photo deletion.
-- Attached WAV voice playback and removal in browser tests; recording UI implemented with permission handling, 15-second limit and track cleanup.
-- Generated offline HTML with embedded photo and audio, escaped user-provided text and restrictive CSP. Opened standalone HTML preview in Chromium: photo rendered, audio source present.
-- PNG export now includes a small photo thumbnail, verified dimensions 1080 × 1350.
-- Recipient preview includes a separate photo/voice chapter. Existing interaction-to-open ritual was smoke-tested via skip-to-reveal on Phase 6 and previously validated in Phase 5.
-- Mobile widths 390 and 320 px: no page errors or horizontal overflow in Phase 6 scenarios.
-- Photo/voice binaries intentionally absent from shared URLs and drafts.
-- No backend, server upload or persistent media URL added.
-
-## Automated commands and outcomes
-
-- `npm test` — PASS (Phase 5 regressions + Phase 6 soundscape, legacy-link and HTML escaping tests)
-- `python scripts/phase6-browser-qa.py` — PASS (desktop, mobile, small-mobile; upload/photo+audio, generated HTML, PNG download, opened recipient scene, no overflow)
-- Standalone generated keepsake opened separately in Chromium — PASS (embedded photo rendered and embedded audio present)
-
-## Limitations needing physical-device checks
-
-- Actual microphone permission and recording device quality; tests covered audio attachments, not a live microphone.
-- Whether particular mobile apps/email clients allow `.html` file attachments (many block them for security).
-- Cross-browser photo processing, especially Safari and low-memory mobile devices.
-- Production hosting, domain DNS, SSL, contact channel and policy review were not performed.
+- Node `npm test`: original Phase 5/6 regression tests and Phase 7 localized content/link checks: PASS.
+- Playwright in-memory browser QA (`python scripts/phase7-browser-qa.py`): PASS at 1440px, 390px, 320px. No JS runtime errors or horizontal overflow detected.
+- Tested Hindi and Gujarati message selection, custom text preserved across language changes, selected occasion localization, Unicode share encoding, fragment-based link output, recipient interactive reveal, actual PNG download (1080×1350), and localized Diwali static guide.
+- External network navigation and real hosted Cloudflare routing were not tested; deployment and real phone/microphone validation are outstanding.
+- Only selected guide page screenshot reviewed automatically; all 18 pages statically generated and checked via tests. Language proofreading by a native speaker remains recommended.
