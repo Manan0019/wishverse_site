@@ -1,0 +1,17 @@
+{
+  "package_pass": true,
+  "errors": [],
+  "warnings": [],
+  "html_files": 24,
+  "guide_pages_found": 18,
+  "internal_asset_links_checked": 494,
+  "sitemap_entries": 22,
+  "launch_ready": false,
+  "remaining_operator_gates": [
+    "Cloudflare project and domain/DNS are not verified",
+    "Real working support contact must be configured",
+    "Real-device microphone/WhatsApp/browser QA pending",
+    "Native-speaker proofreading pending",
+    "Legal/privacy operator review and AdSense readiness pending"
+  ]
+}

@@ -1,10 +1,11 @@
 {
   "name": "wishverse-greetings",
   "private": true,
-  "version": "1.0.0",
+  "version": "8.0.0",
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 5173",
-    "test": "node scripts/smoke-check.mjs"
+    "test": "node scripts/smoke-check.mjs && node scripts/phase8-test.mjs",
+    "audit": "bash scripts/build_deploy.sh && python3 scripts/release_audit.py"
   }
 }

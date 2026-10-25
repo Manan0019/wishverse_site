@@ -53,7 +53,17 @@ export function decodeWish(value) {
 export function getSharedWish() {
   const url = new URL(window.location.href);
   const fragment = url.hash.startsWith('#wish=') ? url.hash.slice(6) : null;
-  return decodeWish(fragment) || decodeWish(url.searchParams.get('wish'));
+  const decodedFragment = decodeWish(fragment);
+  if (decodedFragment) return decodedFragment;
+  const legacy = decodeWish(url.searchParams.get('wish'));
+  if (legacy && window.history?.replaceState) {
+    // A legacy query has already reached the web server; remove it from address/history
+    // after loading to reduce accidental copying and future referrer exposure.
+    url.searchParams.delete('wish');
+    url.hash = `wish=${encodeWish(legacy)}`;
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+  }
+  return legacy;
 }
 
 export function makeShareUrl(wish) {

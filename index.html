@@ -14,6 +14,8 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -50,6 +52,8 @@
     <nav class="mobile-nav" id="mobileNav" hidden aria-label="Mobile navigation"><a href="#occasions">Occasions</a><a href="#how-it-works">How it works</a><a href="#magic">Why it feels special</a><a href="#guides">Wishes & ideas</a><a href="#studio">Create a wish</a></nav>
   </header>
 
+  <a class="skip-to-content" href="#studio">Skip to greeting creator</a>
+  <div id="connectionStatus" class="connection-status" role="status" aria-live="polite" hidden>You are offline. Drafts already on this device are still available.</div>
   <main>
     <section class="hero shell" aria-labelledby="hero-title">
       <div class="hero-copy">
@@ -130,6 +134,7 @@
               <div class="memory-share-hint"><strong>How do photo + voice sharing work?</strong><p>Normal Wishverse links share your card text, theme and soundtrack choice only. For photo and voice, download a self-contained <strong>Keepsake HTML</strong> file and send it as an attachment. Media is never silently uploaded.</p></div>
             </section>
             <div class="editor-divider"></div><div class="editor-step step-2">04 — SHARE IT BEAUTIFULLY</div>
+            <section class="sharing-review" aria-labelledby="sharingReviewTitle"><div class="sharing-review-top"><span aria-hidden="true">✦</span><div><strong id="sharingReviewTitle">Your wish, your choice.</strong><p id="sharingReviewSummary">Link: names, card design and written wishes only.</p></div></div><p id="sharingMediaWarning">Photos and voice never travel inside this share link. For those, send a downloaded Keepsake HTML file instead.</p><p><a href="/help.html#sharing">Understand how sharing works</a></p></section>
             <div class="editor-actions"><button type="button" class="button button-primary button-full" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copy premium link <svg class="ico trailing"><use href="#i-arrow"/></svg></button><button type="button" class="button whatsapp-button button-full" id="shareWhatsapp"><svg class="ico"><use href="#i-send"/></svg> Share on WhatsApp <svg class="ico trailing"><use href="#i-arrow-up"/></svg></button><div class="minor-actions"><button type="button" id="downloadPng"><svg class="ico"><use href="#i-download"/></svg> Save premium PNG</button><button type="button" id="previewWish"><svg class="ico"><use href="#i-eye"/></svg> Preview recipient view</button><button type="button" id="downloadKeepsake"><svg class="ico"><use href="#i-download"/></svg> Download memory keepsake (.html)</button></div></div>
             <section class="draft-station" aria-labelledby="draftTitle">
               <div class="draft-title-row"><div><span class="atelier-kicker">YOUR LITTLE ATELIER</span><h3 id="draftTitle">Keep your creations.</h3></div><span class="draft-local">ON THIS DEVICE ONLY</span></div>
@@ -176,7 +181,7 @@
 
     <section class="closing shell"><div class="closing-orbit"></div><span class="closing-star">✳</span><div class="tiny-label">HIGH-QUALITY GREETINGS, MADE EASY</div><h2>Make every message<br />feel more <em>meaningful.</em></h2><p>Create something beautiful enough to share and personal enough to remember.</p><a href="#studio" class="button button-primary"><svg class="ico"><use href="#i-gift"/></svg> Create premium greeting <svg class="ico"><use href="#i-arrow"/></svg></a></section>
   </main>
-  <footer class="site-footer"><div class="shell footer-inner"><div><a class="brand" href="/"><span class="brand-icon">✦</span><span>wishverse<span class="brand-dot">.</span></span></a><p>Premium greeting experiences. <span>✳</span></p></div><div class="footer-side"><div class="footer-links"><a href="/about.html">About</a><a href="/privacy.html">Privacy</a><a href="#guides">Wishes & ideas</a><a href="#studio">Create a wish</a></div><span>© <span id="year">2026</span> Wishverse. Made with craft and stardust.</span></div></div></footer>
+  <footer class="site-footer"><div class="shell footer-inner"><div><a class="brand" href="/"><span class="brand-icon">✦</span><span>wishverse<span class="brand-dot">.</span></span></a><p>Premium greeting experiences. <span>✳</span></p></div><div class="footer-side"><div class="footer-links"><a href="/about.html">About</a><a href="/help.html">Help & FAQ</a><a href="/privacy.html">Privacy</a><a href="#guides">Wishes & ideas</a><a href="#studio">Create a wish</a></div><span>© <span id="year">2026</span> Wishverse. Made with craft and stardust.</span></div></div></footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden><span class="toast-star">✦</span><span id="toastText"></span></div>
   <div class="share-fallback" id="shareFallback" role="dialog" aria-modal="true" aria-labelledby="shareFallbackTitle" hidden><div class="fallback-box"><button type="button" id="fallbackClose" class="viewer-close" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button><h2 id="shareFallbackTitle">Your premium link ✦</h2><p>Your browser blocked automatic copying. Select and copy this link:</p><textarea id="fallbackUrl" readonly rows="4"></textarea><button type="button" id="selectFallback" class="button button-primary">Select link</button></div></div>

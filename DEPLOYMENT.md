@@ -1,40 +1,58 @@
-# Wishverse Phase 7 · Deploy to Cloudflare Pages
+# Wishverse Phase 8: Cloudflare Pages launch instructions
 
-Planned production address: **https://greetings.mananbhayani.online/**. This domain is **not deployed** merely by opening or downloading these files.
+**Planned site:** https://greetings.mananbhayani.online
+**Domain preservation:** `mananbhayani.online` remains free for your personal portfolio.
+**Status:** Phase 8 package locally validated. No Cloudflare account, registrar/DNS, GitHub repository, domain, Google Analytics, Search Console, or AdSense changes have been performed.
 
-## Option A — Git integration (recommended for continued development)
+## Preferred long-term path: Cloudflare Pages with GitHub integration
 
-1. Create a new private or public GitHub repo for Wishverse (do not commit secrets). Push the full Phase 7 source repository. The included deployment script builds a clean `dist/` directory from the public assets.
-2. In Cloudflare dashboard → Workers & Pages → Create application → Pages → Import an existing Git repository.
-3. Choose your repo and production branch. Set **Build command** to `bash scripts/build_deploy.sh` and **Build output directory** to `dist`. No npm dependency installation or framework compilation is required.
-4. Deploy. Verify the generated `*.pages.dev` URL, the guide pages, the recipient link, PNG/keepsake exports, and the privacy policy.
-5. Pages project → **Custom domains** → **Set up a domain** → add `greetings.mananbhayani.online`.
-6. Follow Cloudflare's displayed DNS setup. If your DNS remains at an external registrar, create a CNAME for `greetings` pointing to your *actual* `<pages-project>.pages.dev` hostname (not an invented one). Wait for domain and HTTPS verification.
-7. Verify the public site on mobile and desktop, including microphone permission over HTTPS.
+1. Create a dedicated GitHub repository for this Wishverse source. Use a private repository if preferred. Commit the **Phase 8 source directory** (not a nested `dist` folder), with no passwords, .env, user media, or API credentials.
+2. In https://dash.cloudflare.com/ open **Workers & Pages**, create a Pages project with **Git integration**, and select the Wishverse repository.
+3. Configure:
+   - Production branch: your main source branch
+   - Build command: `bash scripts/build_deploy.sh`
+   - Build output directory: `dist`
+   - Framework preset: None / static
+   - Environment variables: none required
+4. Deploy and test the actual generated `*.pages.dev` URL. This is a real website, but not yet your custom domain.
+5. Open Pages project → **Custom domains** → **Set up a domain**, then enter `greetings.mananbhayani.online`.
+6. Follow Cloudflare's wizard. If DNS is managed at an external registrar, add the requested **CNAME** with name `greetings` pointing to the **actual** Pages hostname assigned in step 4, for example `<project>.pages.dev`. Do **not** guess the hostname. If the zone is already on Cloudflare, the record can be added automatically.
+7. Wait for HTTPS and DNS to activate; do not change the apex/root domain's DNS record. Verify both `https://greetings.mananbhayani.online/` and guide URLs such as `/gu/occasions/diwali/`.
+8. Deploy revised packages through Git; preview/test first for template, message sharing, voice permissions, and footer/support pages.
 
-## Option B — Direct Upload
+## Alternative: ZIP Direct Upload (manual updates)
 
-1. Create a Cloudflare Pages Direct Upload project in Workers & Pages. It cannot later be converted to Git integration; automatic Git publishing would require a different Pages project.
-2. Drag and drop **Wishverse_Phase7_Cloudflare_Upload.zip** (web files at zip root). Cloudflare supports ZIP or folder uploads from the dashboard.
-3. Check the Pages deployment URL. Set up the custom subdomain under the Pages project as described above.
+The ZIP named `Wishverse_Phase8_Cloudflare_Direct_Upload.zip` has `index.html` and `_headers` at ZIP root. In Cloudflare Workers & Pages, create a **Direct Upload** Pages project and drag/drop that ZIP. Test the assigned `*.pages.dev` address and add the custom subdomain through Pages Custom Domains.
 
-## DNS and cache safeguards
+**Important:** A Direct Upload project cannot later be converted into a Git-integrated project. For frequent future phases, use Git integration now to avoid redeploying to a new project later.
 
-- **Use the Pages project Custom Domains workflow before adding the DNS record**; a manually created CNAME alone is not sufficient.
-- Leave `mananbhayani.online` available for your future personal portfolio. Only point the `greetings` subdomain at Wishverse.
-- `_headers` applies modest security/privacy headers and a one-day cache to `/assets/*`. The personalized greeting data in the URL fragment is not part of the normal HTTP request.
-- HTML pages and greeting links should be tested again on the real public hostname. Social shares show a generic Wishverse preview (not a dynamically generated personalized thumbnail).
+## Security and performance included
 
-## Before indexing and AdSense
+- Static `_headers`: `Content-Security-Policy`, no-sniff, no-referrer, frame protections, Permissions Policy. **Update CSP if adding AdSense/analytics or third-party resources.**
+- `site.webmanifest` + app icons + `sw.js`: progressive/offline public-site shell; no photos/voice or draft records are written to service-worker caches.
+- Public guides have canonical/hreflang and sitemap; shared-card fragments are not part of the HTTP request. Older `?wish` links are converted to fragment links in the browser after they load. Their initial query parameters can still have reached the server/logs.
+- Offline support is progressive enhancement, not a promise that every browser/device will cache every page.
 
-- Add a verified contact email or working contact form to About and Privacy pages; we intentionally did not invent an email address.
-- Confirm the content is complete and suitable for search; proofread Hindi and Gujarati with native speakers.
-- Verify canonical and sitemap URLs only after domain activation.
-- Add Search Console and analytics only after reviewing their respective privacy/cookie notices.
-- Do not add AdSense snippets or an ads.txt publisher ID without a real publisher ID and approval. Avoid placing ads inside private shared-card or recipient screens. Approval is not guaranteed.
+## Functional checks to perform on the deployed site
 
-Cloudflare docs:
-- https://developers.cloudflare.com/pages/framework-guides/deploy-anything/
+1. Homepage and 18 public guide pages load with HTTPS and appropriate localized content.
+2. Select a template/finish and English/Hindi/Gujarati language, make a wish, open recipient preview, and finish an occasion ritual.
+3. Copy a sharing link; open it in a clean phone browser without being logged in. Check sender/recipient and note.
+4. Test actual WhatsApp sharing and generic Open Graph thumbnail (personalized OG thumbnails require server-side image generation).
+5. Test voice recording on HTTPS on iOS Safari, Android Chrome, and desktop. User must give permission.
+6. Test photo PNG and offline Keepsake exports, including opening the exported files on another device.
+7. Verify Help, About and Privacy pages; add **real support contact details before public launch**.
+8. If offline support is enabled by your browser, load the site, disconnect the network, and reopen the cached homepage. Verify reconnect/update behavior.
+9. Confirm no test labels, development placeholder email, or ads appear. Only apply to AdSense once policies, content quality, and user privacy/consent are reviewed.
+
+## DO NOT LAUNCH UNTIL
+
+- Real support contact method is configured and tested.
+- Real-domain DNS/TLS status is confirmed.
+- Human copy/translation and browser/device QA passes.
+- Owner verifies legal/privacy notices and intended public content.
+
+Official Cloudflare references:
 - https://developers.cloudflare.com/pages/get-started/direct-upload/
 - https://developers.cloudflare.com/pages/configuration/custom-domains/
 - https://developers.cloudflare.com/pages/configuration/headers/

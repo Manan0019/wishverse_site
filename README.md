@@ -1,64 +1,52 @@
-# Wishverse · Phase 7 — Global Wishes / Launch Foundation
+# Wishverse — Phase 8: Public Launch & Production Hardening
 
-Phase 7 extends the complete Phase 6 static prototype with a discoverable, original multilingual greeting library and a Cloudflare-ready public deployment package. **Not yet deployed to your domain.**
+A responsive, static, no-account greeting platform for `greetings.mananbhayani.online`. **Not yet deployed**. This release builds on Phase 7 and keeps all prior functionality intact.
 
-## What's new
+## New in Phase 8
 
-- 18 original static occasion guide pages: 6 occasions × English, Hindi and Gujarati.
-- Four example wishes per guide (72 original, localized wishes total), plus thoughtful, occasion-specific usage advice and an entry to the card creator.
-- Each guide has its own canonical URL, meta description, Open Graph metadata, and reciprocal `hreflang` links.
-- Home page greeting language selector: English / हिन्दी / ગુજરાતી. Affects suggested message, greeting heading, recipient reveal, PNG export and offline keepsakes; never changes user's own writing.
-- A home page “Wishes & ideas” discovery section with links to the appropriate language and occasion.
-- **New links use `#wish=` fragments** rather than query parameters so names and personal messages generally stay out of HTTP page requests. Old `?wish=` links remain supported. Links are readable by anyone who has them; this is not encryption.
-- Site `sitemap.xml`, `robots.txt`, `_headers` with privacy-minded response headers and a custom `404.html`.
-- Readable, keyboard-friendly mobile navigation including Escape to close, and responsive guide pages.
-- Deployment ZIP with web files at archive root, separate from the source archive.
+- Progressive web app: manifest, icons, offline fallback, public asset cache (no user media/drafts in SW)
+- Better share-mode disclosure beside the editor's send controls
+- New help/FAQ page with realistic explanations about privacy and media attachment limits
+- Static security headers including CSP, frame, MIME and referrer protections
+- Release audit checks internal asset paths, localized guides, sitemap, icons, and disallowed source files
+- Improved legacy `?wish` link handling, migrating it to a `#wish` fragment when received
+- Dedicated Cloudflare Git/Direct-Upload launch instructions, risk checklist and optional future media-hosting architecture
+- Added `phase8-test.mjs` regression tests for link migration and offline behavior
 
-## Existing features preserved
+## Existing features retained
 
-24 illustrated templates, 3 finishes, six occasion rituals, secret reveal, sealed notes, browser-only saved drafts, 1080×1350 PNGs, photo and 15-second voice media, synthesized soundtrack, offline multimedia keepsake, WhatsApp/link sharing. **Photo and voice do not go inside share URLs.**
+- Six occasion worlds, 24 templates, three finishes
+- English, Hindi and Gujarati personalized greetings and 18 public guides
+- Occasion rituals, sealed note and return greeting journey
+- Browser-local drafts
+- Local photo and voice editor, original synthesizer soundscapes, offline keepsake
+- WhatsApp and copy-link sharing, PNG export
 
-## Run locally
-
-Start in this directory:
+## Local development
 
 ```bash
-python -m http.server 5173
+python3 -m http.server 5173
 ```
 
-Open `http://localhost:5173`.
+Then open `http://localhost:5173`. Microphone support works on localhost or HTTPS with permission.
 
-Examples:
-- `http://localhost:5173/occasions/diwali/`
-- `http://localhost:5173/hi/occasions/birthday/`
-- `http://localhost:5173/gu/occasions/diwali/`
-- `http://localhost:5173/?occasion=diwali&lang=gu#studio`
-
-No `npm install` is necessary to run the site. Modern browser APIs are required for sound, photos and voice recording. Use localhost or HTTPS for the microphone.
-
-## Tests
+## Test and build
 
 ```bash
 npm test
-python scripts/phase7-browser-qa.py
+python3 scripts/phase7-browser-qa.py
+npm run audit
 ```
 
-The browser test uses an isolated browser document due to environment restrictions; it does not validate deployed HTTP hosting or actual microphone permissions.
+`npm run audit` builds `dist/` and checks the deployable package. No npm dependencies need installation for basic development; the Python audit requires `beautifulsoup4` and `Pillow`, and optional browser QA uses Playwright + a supported Chromium installation.
 
-## Updating the guide library
+## What to upload
 
-Edit `scripts/build_occasion_pages.py` (hand-authored localized content) and rebuild:
+- **Source ZIP**: developer version with scripts, assets, docs.
+- **Cloudflare Direct Upload ZIP**: root contains `index.html`, `_headers`, `src/`, guide folders, manifest, icons, SW. Use only for a newly created Direct Upload project.
 
-```bash
-python scripts/build_occasion_pages.py
-```
+For continual upgrades, prefer **Git integration** before you create the Pages project. Direct Upload projects cannot be converted to Git-integrated projects later.
 
-This regenerates localized guides and the sitemap. Avoid uploading an old sitemap after modifying guide paths.
+See `DEPLOYMENT.md`, `LAUNCH_CHECKLIST.md`, `MEDIA_LINK_ARCHITECTURE.md` and `RELEASE_AUDIT.json` for exact status and responsibilities.
 
-## Deployment
-
-See `DEPLOYMENT.md` and `LAUNCH_CHECKLIST.md`. The `Wishverse_Phase7_Cloudflare_Upload.zip` archive contains only public site assets (no internal tests, QA images, or source build scripts). It can be used for Cloudflare Pages Direct Upload. For Git integration, set build command to `bash scripts/build_deploy.sh` and output directory to `dist`.
-
-**Direct Upload is a different Pages project mode than Git integration.** Choose Git integration first for ongoing automated updates; Cloudflare currently does not allow converting an existing Direct Upload project to Git integration.
-
-**Not done in this phase:** domain connection, production contact/support details, actual AdSense approval or ad placement, server-hosted photo/voice links, human review of every language translation by a native editor, legal compliance certification, or production availability tests.
+**Not done:** live deployment, domain change, working support contact, AdSense, cloud media uploads, real-device QA.

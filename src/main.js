@@ -336,6 +336,7 @@ function updatePreview() {
     element.classList.toggle('active', selected);
     element.setAttribute('aria-pressed', String(selected));
   });
+  updateSharingReview();
 }
 
 function updateInputs() {
@@ -711,6 +712,7 @@ function setPhotoUI() {
   } else {
     ['voicePreview','recipientMemoryVoice'].forEach(id=>{ $(id).pause(); $(id).removeAttribute('src'); $(id).load(); });
   }
+  updateSharingReview();
 }
 
 function resetMedia() {
@@ -769,6 +771,31 @@ async function beginRecording() {
     $('voiceStatus').textContent='Recording… tap Stop (maximum 15 seconds)';
     voiceTimer=setTimeout(stopRecording,15000);
   } catch {showToast('Microphone access was denied or unavailable. Audio upload still works.');stopRecording();}
+}
+
+function updateSharingReview() {
+  const summary = $('sharingReviewSummary');
+  const warning = $('sharingMediaWarning');
+  if (!summary || !warning) return;
+  const friend = sanitizeWish(wish);
+  summary.textContent = `Link includes “${friend.to}”, “${friend.from}”, your written wish, note, and visual choices.`;
+  const hasPhoto = Boolean(media.photo), hasVoice = Boolean(media.voice);
+  warning.textContent = (hasPhoto || hasVoice)
+    ? `${hasPhoto ? 'Photo' : ''}${hasPhoto && hasVoice ? ' and ' : ''}${hasVoice ? 'voice' : ''} attached on this device. These will NOT go through the link; download a multimedia keepsake instead.`
+    : 'No media attached. A shared link will carry the text and design, not a photo or voice.';
+  warning.classList.toggle('sharing-alert', hasPhoto || hasVoice);
+}
+
+function setNetworkStatus() {
+  const element = $('connectionStatus');
+  if (!element) return;
+  element.hidden = navigator.onLine !== false;
+}
+
+function registerPublicOfflineSupport() {
+  if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {}), { once: true });
+  }
 }
 
 function warnIfMediaOnLink() {
@@ -919,6 +946,7 @@ function initYear() { const yearEl = $('year'); if (yearEl) yearEl.textContent =
 
 function init() {
   buildThemeCards(); buildGuideLinks(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
+  setNetworkStatus(); window.addEventListener('online', setNetworkStatus); window.addEventListener('offline', setNetworkStatus); registerPublicOfflineSupport();
 }
 
 init();
