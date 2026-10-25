@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080817" />
+  <meta name="description" content="Wishverse turns greetings into premium personalized experiences — beautiful occasion-specific cards, surprise reveals, and shareable magic links." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Wishverse — Premium greeting experiences" />
+  <meta property="og:description" content="Create cinematic, personalized greeting cards with occasion-specific themes, emotional details, and a magical reveal." />
+  <meta property="og:image" content="https://greetings.mananbhayani.online/og-preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles.css" />
+  <title>Wishverse — Premium personalized greetings</title>
+</head>
+<body>
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 2 2.15 7.85L22 12l-7.85 2.15L12 22l-2.15-7.85L2 12l7.85-2.15L12 2Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M5 19 19 5M8 5h11v11"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18M12 9C8 9 5 7 6 4c1-3 5-1 6 5Zm0 0c4 0 7-2 6-5-1-3-5-1-6 5Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.6c0 5-8.8 11.2-8.8 11.2S3.2 13.6 3.2 8.6a4.7 4.7 0 0 1 8.8-2.2 4.7 4.7 0 0 1 8.8 2.2Z"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7.2 20-4.1-8.7L2 9.2 22 2ZM10.7 13.3 22 2"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M9 15 15 9M8 10l-2 2a4 4 0 0 0 5.7 5.7l2-2M16 14l2-2a4 4 0 0 0-5.7-5.7l-2 2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v13m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></symbol>
+    <symbol id="i-volumeoff" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM16 9l5 6m0-6-5 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-magic" viewBox="0 0 24 24"><path d="m5 20 14-14m-5-3 1-2 1 2 2 1-2 1-1 2-1-2-2-1ZM2 6l1-2 1 2 2 1-2 1-1 2-1-2-2-1ZM18 16l1.3-3 1.3 3 3 1.3-3 1.3-1.3 3-1.3-3-3-1.3Z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 2 5.3M20 4v7h-7"/></symbol>
+  </svg>
+
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="site-header" id="top">
+    <div class="shell nav-shell">
+      <a class="brand" href="/" aria-label="Wishverse home"><span class="brand-icon">✦</span><span>wishverse<span class="brand-dot">.</span></span></a>
+      <nav class="desktop-nav" aria-label="Primary navigation"><a href="#occasions">Occasions</a><a href="#how-it-works">How it works</a><a href="#magic">Why it feels special</a></nav>
+      <a class="nav-cta" href="#studio">Create a wish <svg class="ico"><use href="#i-arrow-up"/></svg></a>
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false"><svg class="ico"><use href="#i-menu"/></svg></button>
+    </div>
+    <nav class="mobile-nav" id="mobileNav" hidden aria-label="Mobile navigation"><a href="#occasions">Occasions</a><a href="#how-it-works">How it works</a><a href="#magic">Why it feels special</a><a href="#studio">Create a wish</a></nav>
+  </header>
+
+  <main>
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-glyph">✦</span> PREMIUM PERSONALIZED GREETINGS</div>
+        <h1 id="hero-title">Not just a card.<br /><em>An unforgettable <span class="hero-underline">little experience</span>.</em></h1>
+        <p class="hero-sub">Build premium greetings that feel made for one person — with unique occasion worlds, emotional details, magical reveals, and stunning downloadable cards.</p>
+        <div class="hero-actions"><a href="#studio" class="button button-primary"><svg class="ico"><use href="#i-magic"/></svg> Build a premium wish <svg class="ico"><use href="#i-arrow"/></svg></a><a href="#occasions" class="button button-quiet">Explore the worlds <span aria-hidden="true">↗</span></a></div>
+        <div class="hero-meta"><div class="hero-mini-stars">✦ ✳ ✶</div><span>More than “Happy Birthday”. More than “Happy Diwali”.<br />Every occasion deserves its own atmosphere.</span></div>
+      </div>
+      <div class="hero-showcase" id="heroShowcase" aria-label="Example premium greeting card">
+        <div class="orbital orbital-one"></div><div class="orbital orbital-two"></div>
+        <div class="orbit-star os1">✧</div><div class="orbit-star os2">✳</div><div class="orbit-star os3">✦</div>
+        <div class="showcase-card">
+          <div class="showcase-noise"></div><div class="showcase-ring one"></div><div class="showcase-ring two"></div>
+          <div class="showcase-top"><span>WISHVERSE / PREMIUM</span><span>✦</span></div>
+          <div class="showcase-centre"><span class="showcase-petal">✳</span><span class="showcase-kicker">CRAFTED FOR SOMEONE SPECIAL</span><h2>Every occasion<br />deserves its own <i>world.</i></h2><span class="showcase-small">MORE PERSONAL. MORE EMOTIONAL. MORE BEAUTIFUL.</span></div>
+          <div class="showcase-foot"><span>IMMERSIVE GREETINGS</span><span>2026 ✦</span></div>
+        </div>
+        <div class="float-tag float-top"><span class="float-tag-icon">✦</span><span>distinct themes<br /><strong>for every occasion</strong></span></div>
+        <div class="float-tag float-bottom"><span class="float-tag-heart">♡</span><span>crafted details<br /><strong>for one special person</strong></span></div>
+      </div>
+      <a class="scroll-cue" href="#occasions">SCROLL TO EXPLORE <span>↓</span></a>
+    </section>
+
+    <section class="ticker" aria-label="Greeting possibilities"><div class="ticker-track" aria-hidden="true"><span>BIRTHDAYS</span> ✳ <span>ANNIVERSARIES</span> ✳ <span>DIWALI</span> ✳ <span>RAKSHA BANDHAN</span> ✳ <span>NEW YEAR</span> ✳ <span>CHRISTMAS</span> ✳ <span>BIRTHDAYS</span> ✳ <span>ANNIVERSARIES</span> ✳ <span>DIWALI</span> ✳ <span>RAKSHA BANDHAN</span> ✳ <span>NEW YEAR</span> ✳ <span>CHRISTMAS</span> ✳</div></section>
+
+    <section class="section occasions shell" id="occasions" aria-labelledby="occasion-heading">
+      <div class="section-topline"><span class="tiny-label">01 / CHOOSE THE OCCASION WORLD</span><span class="tiny-label muted">EVERY CELEBRATION HAS ITS OWN VISUAL LANGUAGE</span></div>
+      <div class="section-heading-row"><div><h2 id="occasion-heading">No more one-style-fits-all.<br /><em>Each occasion gets its own magic.</em></h2><p>From golden festive light to romantic floral elegance, every greeting starts with a world designed around that feeling.</p></div><span class="section-doodle" aria-hidden="true">✳</span></div>
+      <div class="occasion-grid" id="occasionGrid"></div>
+    </section>
+
+    <section class="studio-band" id="studio" aria-labelledby="studio-heading"><div class="studio-glow"></div>
+      <div class="shell studio-shell">
+        <div class="section-topline"><span class="tiny-label">02 / THE PREMIUM STUDIO</span><span class="tiny-label muted">PERSONALIZED, LAYERED, AND READY TO SHARE</span></div>
+        <div class="studio-heading"><h2 id="studio-heading">Make it deeply <em>personal.</em></h2><p>Add who it’s for, who it’s from, the tone, and one special detail that makes the card feel unmistakably theirs.</p></div>
+        <div class="studio-layout">
+          <div class="editor-panel">
+            <div class="editor-top"><span class="editor-step">01 — PERSONALIZE THE MOMENT</span><span class="editor-live"><span></span> LIVE PREVIEW</span></div>
+            <div class="field-row"><label class="field"><span>WHO IS THIS FOR?</span><input id="toInput" maxlength="40" autocomplete="off" placeholder="Their name" value="Aarohi" /></label><label class="field"><span>WHO IS IT FROM?</span><input id="fromInput" maxlength="40" autocomplete="off" placeholder="Your name" value="Manan" /></label></div>
+            <div class="field-row"><label class="field"><span>THEIR PLACE IN YOUR LIFE</span><select id="relationInput"></select></label><label class="field"><div class="field-label-row"><span>A SPECIAL DETAIL</span><span id="memoryCount">0 / 100</span></div><input id="memoryInput" maxlength="100" autocomplete="off" placeholder="A memory, a feeling, or what makes them special" /></label></div>
+            <div class="field helper-panel"><div class="helper-header"><div><span class="helper-label">THEME INSIGHT</span><strong id="helperHeadline">A whole day that looks like joy.</strong></div><span id="helperTagline">Confetti, candlelight, and pure main-character sparkle.</span></div></div>
+            <fieldset class="theme-fieldset"><legend>CHOOSE THE OCCASION</legend><div class="theme-pills" id="themePills"></div></fieldset>
+            <fieldset class="theme-fieldset finish-fieldset"><legend>CHOOSE THE CARD FINISH</legend><div class="finish-pills" id="finishPills"></div></fieldset>
+            <fieldset class="theme-fieldset tone-fieldset"><legend>CHOOSE THE MESSAGE FEEL</legend><div class="tone-pills" id="tonePills"></div></fieldset>
+            <div class="field"><div class="field-label-row"><label for="messageInput">YOUR MAIN MESSAGE</label><span id="charCount">0 / 260</span></div><textarea id="messageInput" maxlength="260" rows="5" placeholder="Write something unforgettable..."></textarea><div class="field-helper-row"><span>Pro tip: keep it emotional, warm, and simple.</span><button type="button" class="secondary-inline" id="shuffleMessage"><svg class="ico"><use href="#i-refresh"/></svg> Refresh suggestion</button></div></div>
+            <div class="editor-divider"></div><div class="editor-step step-2">02 — MAKE IT FEEL SPECIAL</div>
+            <label class="switch-line" for="secretToggle"><span class="switch-icon">✉</span><span class="switch-copy"><strong>Secret reveal</strong><small>Let the recipient unwrap the card like a surprise.</small></span><input class="switch-input" type="checkbox" id="secretToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
+            <label class="switch-line" for="hideMemoryToggle"><span class="switch-icon">♡</span><span class="switch-copy"><strong>Sealed memory</strong><small>Let them tap to discover your personal note.</small></span><input class="switch-input" type="checkbox" id="hideMemoryToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
+            <label class="switch-line" for="particlesToggle"><span class="switch-icon">✳</span><span class="switch-copy"><strong>Celebration sparkles</strong><small>Add a magical burst when the card opens.</small></span><input class="switch-input" type="checkbox" id="particlesToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
+            <div class="editor-divider"></div><div class="editor-step step-2">03 — SHARE IT BEAUTIFULLY</div>
+            <div class="editor-actions"><button type="button" class="button button-primary button-full" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copy premium link <svg class="ico trailing"><use href="#i-arrow"/></svg></button><button type="button" class="button whatsapp-button button-full" id="shareWhatsapp"><svg class="ico"><use href="#i-send"/></svg> Share on WhatsApp <svg class="ico trailing"><use href="#i-arrow-up"/></svg></button><div class="minor-actions"><button type="button" id="downloadPng"><svg class="ico"><use href="#i-download"/></svg> Save premium PNG</button><button type="button" id="previewWish"><svg class="ico"><use href="#i-eye"/></svg> Preview recipient view</button></div></div>
+            <p class="editor-note"><svg class="ico"><use href="#i-heart"/></svg> Sharing links contain readable, encoded names and messages. Only include details you are comfortable sharing.</p>
+          </div>
+          <div class="preview-panel"><div class="preview-heading"><div><span class="preview-live-dot"></span> YOUR OCCASION WORLD</div><span>PREVIEW / PREMIUM</span></div>
+            <div class="preview-meta-bar"><span><strong id="previewTheme">BIRTHDAY</strong> UNIVERSE</span><span id="previewTone">HEARTFELT</span><span id="previewOccasionLine">Confetti • Cake • Glow</span></div>
+            <div class="preview-outer" id="previewOuter">
+              <div class="wish-card theme-birthday scene-birthday" id="wishCard">
+                <div class="wish-card-grain"></div><div class="wish-card-halo"></div><img class="wish-illustration" id="cardIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="wish-scene scene-a"></div><div class="wish-scene scene-b"></div>
+                <div class="wish-motif motif-one" id="motifOne">✦</div><div class="wish-motif motif-two" id="motifTwo">✳</div><div class="wish-motif motif-three" id="motifThree">✧</div>
+                <div class="wish-card-top"><span>✦ WISHVERSE</span><span id="cardThemeTag">THE GRAND BIRTHDAY SOIRÉE</span></div>
+                <div class="wish-card-main"><span class="wish-card-icon" id="cardSymbol">✦</span><span class="card-overline" id="cardRelation">FOR MY BEST FRIEND</span><h3 id="cardRecipient">Aarohi</h3><span class="wish-title" id="cardTitle">Happy Birthday</span><p id="cardMessage"></p><div class="wish-memory-pill" id="cardMemory">A whole day that looks like joy.</div></div>
+                <div class="wish-card-bottom"><span>WITH LOVE,</span><strong id="cardSender">Manan</strong><span class="wish-card-seal">✦</span></div>
+              </div>
+            </div>
+            <div class="preview-foot"><span>✦ PREMIUM OCCASION EXPERIENCE</span><span><span class="pulse-circle"></span> LOOKING BEAUTIFUL</span></div>
+            <p class="preview-hint">Try changing the occasion and tone — the visual world updates immediately.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section magic-section shell" id="magic" aria-labelledby="magic-heading">
+      <div class="section-topline"><span class="tiny-label">03 / WHY IT FEELS BETTER</span><span class="tiny-label muted">CRAFTED FOR EMOTION, NOT JUST INFORMATION</span></div>
+      <div class="section-heading-row magic-head"><div><h2 id="magic-heading">A simple message,<br /><em>designed like a moment.</em></h2><p>The point isn’t only what you say. It’s how beautifully the person experiences it when they open the card.</p></div></div>
+      <div class="magic-grid">
+        <article class="magic-feature magic-feature-big"><div class="feature-content"><span class="feature-number">01 / DISTINCT WORLDS</span><h3>Every occasion gets<br /><i>its own personality.</i></h3><p>No generic recolor. Birthday feels festive, Diwali feels radiant, Anniversary feels intimate, and every theme has its own mood.</p></div><div class="magic-envelope-visual" aria-hidden="true"><div class="visual-stars">✦　 ✧　✳</div><div class="magic-envelope"><span>✦</span></div><div class="envelope-shine"></div></div></article>
+        <article class="magic-feature magic-feature-spark"><div class="feature-content"><span class="feature-number">02 / PERSONAL DETAILS</span><h3>Name, relation, memory,<br /><i>and emotional tone.</i></h3><p>These small inputs make the greeting feel intimate rather than copied or generic.</p></div><div class="magic-star-visual" aria-hidden="true"><span>✧</span><span>✦</span><span>✳</span><span>✷</span><span>✧</span></div></article>
+        <article class="magic-feature magic-feature-link"><div class="feature-content"><span class="feature-number">03 / BEAUTIFUL DELIVERY</span><h3>One beautiful link.<br /><i>A living little moment.</i></h3><p>The recipient doesn’t just read a text. They open an experience that feels made for them.</p></div><div class="magic-link-visual" aria-hidden="true">✦ <span>greetings.mananbhayani.online</span> ↗</div></article>
+      </div>
+    </section>
+
+    <section class="how-section" id="how-it-works" aria-labelledby="how-heading"><div class="shell">
+      <div class="section-topline"><span class="tiny-label">04 / VERY SIMPLE TO USE</span><span class="tiny-label muted">PREMIUM FEEL, EASY FLOW</span></div>
+      <div class="how-intro"><h2 id="how-heading">Three steps to<br /><em>make someone feel special.</em></h2><p>Start with an occasion, personalize the details, then share the magic instantly.</p></div>
+      <div class="steps"><article class="step"><div class="step-top"><span>01</span><span>✳</span></div><h3>Choose a world</h3><p>Select the occasion that matches the moment — Birthday, Diwali, Christmas, and more.</p></article><article class="step"><div class="step-top"><span>02</span><span>♡</span></div><h3>Make it personal</h3><p>Add names, your relationship, the tone of the wish, and one memorable detail.</p></article><article class="step"><div class="step-top"><span>03</span><span>↗</span></div><h3>Share beautifully</h3><p>Send one premium link or save a polished PNG card they’ll want to keep.</p></article></div>
+    </div></section>
+
+    <section class="closing shell"><div class="closing-orbit"></div><span class="closing-star">✳</span><div class="tiny-label">HIGH-QUALITY GREETINGS, MADE EASY</div><h2>Make every message<br />feel more <em>meaningful.</em></h2><p>Create something beautiful enough to share and personal enough to remember.</p><a href="#studio" class="button button-primary"><svg class="ico"><use href="#i-gift"/></svg> Create premium greeting <svg class="ico"><use href="#i-arrow"/></svg></a></section>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><div><a class="brand" href="/"><span class="brand-icon">✦</span><span>wishverse<span class="brand-dot">.</span></span></a><p>Premium greeting experiences. <span>✳</span></p></div><div class="footer-side"><div class="footer-links"><a href="/about.html">About</a><a href="/privacy.html">Privacy</a><a href="#studio">Create a wish</a></div><span>© <span id="year">2026</span> Wishverse. Made with craft and stardust.</span></div></div></footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden><span class="toast-star">✦</span><span id="toastText"></span></div>
+  <div class="share-fallback" id="shareFallback" role="dialog" aria-modal="true" aria-labelledby="shareFallbackTitle" hidden><div class="fallback-box"><button type="button" id="fallbackClose" class="viewer-close" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button><h2 id="shareFallbackTitle">Your premium link ✦</h2><p>Your browser blocked automatic copying. Select and copy this link:</p><textarea id="fallbackUrl" readonly rows="4"></textarea><button type="button" id="selectFallback" class="button button-primary">Select link</button></div></div>
+
+  <div class="recipient-view" id="recipientView" hidden aria-label="Personalized greeting experience">
+    <div class="recipient-bg"></div><div class="recipient-stars" id="recipientStars" aria-hidden="true"></div>
+    <div class="recipient-topbar"><a class="brand" href="/" id="viewerBrand"><span class="brand-icon">✦</span><span>wishverse<span class="brand-dot">.</span></span></a><button type="button" class="recipient-audio" id="soundToggle" aria-label="Turn sound on"><svg class="ico"><use href="#i-volumeoff"/></svg><span>SOUND OFF</span></button></div>
+    <div class="recipient-scene scene-birthday" id="recipientScene">
+      <div class="recipient-closed" id="recipientClosed"><span class="recipient-kicker">✦ A PREMIUM GREETING EXPERIENCE ✦</span><p class="recipient-small" id="receiverFrom">SOMEONE HAS SOMETHING BEAUTIFUL FOR YOU</p><h2 id="receiverHello">Aarohi, this one’s<br /><em>crafted for you.</em></h2><button class="envelope-interaction" type="button" id="unwrapButton" aria-label="Unwrap your greeting"><span class="envelope-back"></span><span class="envelope-paper">A LITTLE SOMETHING JUST FOR YOU ✦</span><span class="envelope-flap"></span><span class="envelope-front"><span class="envelope-stamp">✦</span></span></button><button class="button button-primary recipient-unlock" type="button" id="unwrapAction">Begin the moment <svg class="ico"><use href="#i-sparkle"/></svg></button><span class="recipient-bottom-hint">PERSONAL. THOUGHTFUL. MADE TO BE FELT.</span></div>
+      <div class="recipient-ritual" id="recipientRitual" hidden>
+        <span class="recipient-kicker">✦ A LITTLE MOMENT BEFORE THE WISH ✦</span>
+        <div class="ritual-panel">
+          <div class="ritual-copy">
+            <p class="recipient-small" id="ritualLabel">AN INTERACTIVE OCCASION MOMENT</p>
+            <h3 id="ritualTitle">A tiny ritual before the reveal.</h3>
+            <p class="ritual-instruction" id="ritualInstruction">Each occasion has its own small interaction. Complete it to open the greeting beautifully.</p>
+            <div class="ritual-progress"><span id="ritualProgressText">Ready to begin</span><div class="ritual-bar"><span id="ritualBar"></span></div></div>
+          </div>
+          <div class="ritual-canvas" id="ritualCanvas"></div>
+          <div class="ritual-actions">
+            <button type="button" class="button button-primary" id="ritualAction">Start</button>
+            <button type="button" class="button ritual-skip" id="ritualSkip">Reveal card now</button>
+          </div>
+        </div>
+      </div>
+      <div class="recipient-opened" id="recipientOpened" hidden><span class="recipient-kicker">✦ A PREMIUM WISH, JUST FOR YOU ✦</span><div class="opened-card theme-birthday scene-birthday" id="openedCard"><img class="opened-illustration" id="openedIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="opened-ornament" id="openedMotif">✳</div><span id="openedOverline">THE GRAND BIRTHDAY SOIRÉE · HEARTFELT</span><div class="opened-relation" id="openedRelation">FOR MY BEST FRIEND</div><h2 id="openedName">Aarohi</h2><h3 id="openedGreeting">Happy Birthday</h3><p id="openedMessage"></p><button type="button" class="opened-memory is-sealed" id="memoryReveal" aria-expanded="false"><span class="sealed-label" id="memorySealLabel">✦ A little secret is waiting. Tap to reveal.</span><span class="memory-revealed" id="openedMemory">A whole day that looks like joy.</span></button><div class="opened-signoff">With love, <strong id="openedFrom">Manan</strong></div></div><div class="recipient-reactions"><button type="button" class="button reaction-button" id="moreSparkles"><svg class="ico"><use href="#i-sparkle"/></svg> Celebrate again</button><button type="button" class="button button-primary" id="makeOneBack">Make one in return <svg class="ico"><use href="#i-arrow"/></svg></button></div></div>
+    </div><div class="recipient-footer">A LITTLE MAGIC FROM <strong>WISHVERSE ✦</strong></div><div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body></html>
