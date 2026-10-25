@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/styles.css" />
-  <title>Wishverse — Premium personalized greetings</title>
+  <title>Wishverse — The Template Universe · Personalized greetings</title>
 </head>
 <body>
   <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -53,8 +53,8 @@
     <section class="hero shell" aria-labelledby="hero-title">
       <div class="hero-copy">
         <div class="eyebrow"><span class="eyebrow-glyph">✦</span> PREMIUM PERSONALIZED GREETINGS</div>
-        <h1 id="hero-title">Not just a card.<br /><em>An unforgettable <span class="hero-underline">little experience</span>.</em></h1>
-        <p class="hero-sub">Build premium greetings that feel made for one person — with unique occasion worlds, emotional details, magical reveals, and stunning downloadable cards.</p>
+        <h1 id="hero-title">Every feeling<br /><em>deserves a <span class="hero-underline">beautiful story</span>.</em></h1>
+        <p class="hero-sub">Discover 24 curated card designs across six occasions, then make every detail personal. Save drafts, create memories, and share a moment they can feel.</p>
         <div class="hero-actions"><a href="#studio" class="button button-primary"><svg class="ico"><use href="#i-magic"/></svg> Build a premium wish <svg class="ico"><use href="#i-arrow"/></svg></a><a href="#occasions" class="button button-quiet">Explore the worlds <span aria-hidden="true">↗</span></a></div>
         <div class="hero-meta"><div class="hero-mini-stars">✦ ✳ ✶</div><span>More than “Happy Birthday”. More than “Happy Diwali”.<br />Every occasion deserves its own atmosphere.</span></div>
       </div>
@@ -77,7 +77,7 @@
 
     <section class="section occasions shell" id="occasions" aria-labelledby="occasion-heading">
       <div class="section-topline"><span class="tiny-label">01 / CHOOSE THE OCCASION WORLD</span><span class="tiny-label muted">EVERY CELEBRATION HAS ITS OWN VISUAL LANGUAGE</span></div>
-      <div class="section-heading-row"><div><h2 id="occasion-heading">No more one-style-fits-all.<br /><em>Each occasion gets its own magic.</em></h2><p>From golden festive light to romantic floral elegance, every greeting starts with a world designed around that feeling.</p></div><span class="section-doodle" aria-hidden="true">✳</span></div>
+      <div class="section-heading-row"><div><h2 id="occasion-heading">Six occasions. Four looks each.<br /><em>Every wish, your own signature.</em></h2><p>Explore 24 art-directed templates, then make them truly yours with finishes, personal notes, and beautiful rituals.</p></div><span class="section-doodle" aria-hidden="true">✳</span></div>
       <div class="occasion-grid" id="occasionGrid"></div>
     </section>
 
@@ -92,6 +92,8 @@
             <div class="field-row"><label class="field"><span>THEIR PLACE IN YOUR LIFE</span><select id="relationInput"></select></label><label class="field"><div class="field-label-row"><span>A SPECIAL DETAIL</span><span id="memoryCount">0 / 100</span></div><input id="memoryInput" maxlength="100" autocomplete="off" placeholder="A memory, a feeling, or what makes them special" /></label></div>
             <div class="field helper-panel"><div class="helper-header"><div><span class="helper-label">THEME INSIGHT</span><strong id="helperHeadline">A whole day that looks like joy.</strong></div><span id="helperTagline">Confetti, candlelight, and pure main-character sparkle.</span></div></div>
             <fieldset class="theme-fieldset"><legend>CHOOSE THE OCCASION</legend><div class="theme-pills" id="themePills"></div></fieldset>
+            <div class="atelier-heading"><div><span class="atelier-kicker">THE TEMPLATE UNIVERSE / 24 CURATED DESIGNS</span><h3>Choose your visual story.</h3><p id="templateSummary">Four distinct designs, created for this occasion.</p></div><button id="surpriseTemplate" class="atelier-surprise" type="button" aria-label="Select another template">✧ Surprise me</button></div>
+            <div class="template-gallery" id="templateGallery" role="group" aria-label="Card design templates"></div>
             <fieldset class="theme-fieldset finish-fieldset"><legend>CHOOSE THE CARD FINISH</legend><div class="finish-pills" id="finishPills"></div></fieldset>
             <fieldset class="theme-fieldset tone-fieldset"><legend>CHOOSE THE MESSAGE FEEL</legend><div class="tone-pills" id="tonePills"></div></fieldset>
             <div class="field"><div class="field-label-row"><label for="messageInput">YOUR MAIN MESSAGE</label><span id="charCount">0 / 260</span></div><textarea id="messageInput" maxlength="260" rows="5" placeholder="Write something unforgettable..."></textarea><div class="field-helper-row"><span>Pro tip: keep it emotional, warm, and simple.</span><button type="button" class="secondary-inline" id="shuffleMessage"><svg class="ico"><use href="#i-refresh"/></svg> Refresh suggestion</button></div></div>
@@ -101,12 +103,18 @@
             <label class="switch-line" for="particlesToggle"><span class="switch-icon">✳</span><span class="switch-copy"><strong>Celebration sparkles</strong><small>Add a magical burst when the card opens.</small></span><input class="switch-input" type="checkbox" id="particlesToggle" checked /><span class="switch-visual" aria-hidden="true"></span></label>
             <div class="editor-divider"></div><div class="editor-step step-2">03 — SHARE IT BEAUTIFULLY</div>
             <div class="editor-actions"><button type="button" class="button button-primary button-full" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copy premium link <svg class="ico trailing"><use href="#i-arrow"/></svg></button><button type="button" class="button whatsapp-button button-full" id="shareWhatsapp"><svg class="ico"><use href="#i-send"/></svg> Share on WhatsApp <svg class="ico trailing"><use href="#i-arrow-up"/></svg></button><div class="minor-actions"><button type="button" id="downloadPng"><svg class="ico"><use href="#i-download"/></svg> Save premium PNG</button><button type="button" id="previewWish"><svg class="ico"><use href="#i-eye"/></svg> Preview recipient view</button></div></div>
+            <section class="draft-station" aria-labelledby="draftTitle">
+              <div class="draft-title-row"><div><span class="atelier-kicker">YOUR LITTLE ATELIER</span><h3 id="draftTitle">Keep your creations.</h3></div><span class="draft-local">ON THIS DEVICE ONLY</span></div>
+              <div class="draft-add"><label class="sr-only" for="draftName">Name your saved draft</label><input id="draftName" type="text" maxlength="44" autocomplete="off" placeholder="Name this draft (e.g. Mum's Diwali wish)" /><button type="button" id="saveDraft">Save draft</button></div>
+              <div class="draft-list" id="draftList" aria-live="polite"></div>
+              <p class="draft-hint">Saved only in this browser — not synced between devices. Do not use for sensitive messages on a shared computer.</p>
+            </section>
             <p class="editor-note"><svg class="ico"><use href="#i-heart"/></svg> Sharing links contain readable, encoded names and messages. Only include details you are comfortable sharing.</p>
           </div>
-          <div class="preview-panel"><div class="preview-heading"><div><span class="preview-live-dot"></span> YOUR OCCASION WORLD</div><span>PREVIEW / PREMIUM</span></div>
-            <div class="preview-meta-bar"><span><strong id="previewTheme">BIRTHDAY</strong> UNIVERSE</span><span id="previewTone">HEARTFELT</span><span id="previewOccasionLine">Confetti • Cake • Glow</span></div>
+          <div class="preview-panel"><div class="preview-heading"><div><span class="preview-live-dot"></span> YOUR OCCASION WORLD</div><span>PREVIEW / TEMPLATE UNIVERSE</span></div>
+            <div class="preview-meta-bar"><span><strong id="previewTheme">BIRTHDAY</strong> UNIVERSE</span><span id="previewTone">HEARTFELT</span><span id="previewOccasionLine">Confetti • Cake • Glow</span><span id="previewTemplate">CONFETTI ROYALE</span></div>
             <div class="preview-outer" id="previewOuter">
-              <div class="wish-card theme-birthday scene-birthday" id="wishCard">
+              <div class="wish-card theme-birthday scene-birthday" data-layout="illustrated" id="wishCard">
                 <div class="wish-card-grain"></div><div class="wish-card-halo"></div><img class="wish-illustration" id="cardIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="wish-scene scene-a"></div><div class="wish-scene scene-b"></div>
                 <div class="wish-motif motif-one" id="motifOne">✦</div><div class="wish-motif motif-two" id="motifTwo">✳</div><div class="wish-motif motif-three" id="motifThree">✧</div>
                 <div class="wish-card-top"><span>✦ WISHVERSE</span><span id="cardThemeTag">THE GRAND BIRTHDAY SOIRÉE</span></div>
@@ -165,7 +173,7 @@
           </div>
         </div>
       </div>
-      <div class="recipient-opened" id="recipientOpened" hidden><span class="recipient-kicker">✦ A PREMIUM WISH, JUST FOR YOU ✦</span><div class="opened-card theme-birthday scene-birthday" id="openedCard"><img class="opened-illustration" id="openedIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="opened-ornament" id="openedMotif">✳</div><span id="openedOverline">THE GRAND BIRTHDAY SOIRÉE · HEARTFELT</span><div class="opened-relation" id="openedRelation">FOR MY BEST FRIEND</div><h2 id="openedName">Aarohi</h2><h3 id="openedGreeting">Happy Birthday</h3><p id="openedMessage"></p><button type="button" class="opened-memory is-sealed" id="memoryReveal" aria-expanded="false"><span class="sealed-label" id="memorySealLabel">✦ A little secret is waiting. Tap to reveal.</span><span class="memory-revealed" id="openedMemory">A whole day that looks like joy.</span></button><div class="opened-signoff">With love, <strong id="openedFrom">Manan</strong></div></div><div class="recipient-reactions"><button type="button" class="button reaction-button" id="moreSparkles"><svg class="ico"><use href="#i-sparkle"/></svg> Celebrate again</button><button type="button" class="button button-primary" id="makeOneBack">Make one in return <svg class="ico"><use href="#i-arrow"/></svg></button></div></div>
+      <div class="recipient-opened" id="recipientOpened" hidden><span class="recipient-kicker">✦ A PREMIUM WISH, JUST FOR YOU ✦</span><div class="opened-card theme-birthday scene-birthday" data-layout="illustrated" id="openedCard"><img class="opened-illustration" id="openedIllustration" src="/assets/art/birthday.svg" alt="" aria-hidden="true"/><div class="opened-ornament" id="openedMotif">✳</div><span id="openedOverline">THE GRAND BIRTHDAY SOIRÉE · HEARTFELT</span><div class="opened-relation" id="openedRelation">FOR MY BEST FRIEND</div><h2 id="openedName">Aarohi</h2><h3 id="openedGreeting">Happy Birthday</h3><p id="openedMessage"></p><button type="button" class="opened-memory is-sealed" id="memoryReveal" aria-expanded="false"><span class="sealed-label" id="memorySealLabel">✦ A little secret is waiting. Tap to reveal.</span><span class="memory-revealed" id="openedMemory">A whole day that looks like joy.</span></button><div class="opened-signoff">With love, <strong id="openedFrom">Manan</strong></div></div><div class="recipient-reactions"><button type="button" class="button reaction-button" id="moreSparkles"><svg class="ico"><use href="#i-sparkle"/></svg> Celebrate again</button><button type="button" class="button button-primary" id="makeOneBack">Make one in return <svg class="ico"><use href="#i-arrow"/></svg></button></div></div>
     </div><div class="recipient-footer">A LITTLE MAGIC FROM <strong>WISHVERSE ✦</strong></div><div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
   </div>
   <script type="module" src="/src/main.js"></script>

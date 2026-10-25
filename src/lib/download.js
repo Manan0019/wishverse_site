@@ -1,4 +1,5 @@
 import { getTheme, getTone, getArtUrl } from '../data/themes.js';
+import { getTemplate } from '../data/templates.js';
 import { sanitizeWish } from './share.js';
 
 const W = 1080;
@@ -46,28 +47,28 @@ function centered(ctx, text, y, font, color = '#fff', maxWidth = 890) {
   ctx.fillText(text, W / 2, y, maxWidth);
 }
 
-function background(ctx, theme, finish) {
+function background(ctx, theme, finish, preset) {
   let fill;
   if (finish === 'heirloom') {
     fill = ctx.createLinearGradient(0, 0, W, H);
     fill.addColorStop(0, '#fff8ea');
     fill.addColorStop(0.65, '#f3e4c9');
     fill.addColorStop(1, '#e9d4b4');
-  } else if (finish === 'velvet') {
+  } else if (finish === 'velvet' || preset.layout === 'celestial') {
     fill = ctx.createRadialGradient(W / 2, 320, 50, W / 2, 640, 850);
-    fill.addColorStop(0, theme.colors[0]);
+    fill.addColorStop(0, preset.colors[0]);
     fill.addColorStop(0.65, '#151022');
     fill.addColorStop(1, '#070b16');
   } else {
     fill = ctx.createLinearGradient(65, 70, W - 100, H);
-    fill.addColorStop(0, theme.colors[0]);
-    fill.addColorStop(0.53, theme.colors[1]);
+    fill.addColorStop(0, preset.layout === 'minimal' ? '#fbf6ed' : preset.colors[0]);
+    fill.addColorStop(0.53, preset.layout === 'minimal' ? '#e7dac7' : preset.colors[1]);
     fill.addColorStop(1, '#1a102b');
   }
   ctx.fillStyle = fill;
   ctx.fillRect(0, 0, W, H);
   const glow = ctx.createRadialGradient(760, 150, 20, 760, 150, 650);
-  glow.addColorStop(0, finish === 'heirloom' ? '#d0a87355' : theme.colors[2] + '77');
+  glow.addColorStop(0, finish === 'heirloom' || preset.layout === 'minimal' ? '#d0a87355' : preset.colors[2] + '77');
   glow.addColorStop(1, '#ffffff00');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
@@ -86,7 +87,7 @@ function drawTexture(ctx, finish) {
   ctx.restore();
 }
 
-async function drawArtwork(ctx, theme, finish) {
+async function drawArtwork(ctx, theme, finish, preset) {
   const img = new Image();
   await new Promise((resolve) => {
     const timeout = setTimeout(resolve, 1800);
@@ -96,8 +97,10 @@ async function drawArtwork(ctx, theme, finish) {
   });
   if (img.complete && img.naturalWidth) {
     ctx.save();
-    ctx.globalAlpha = finish === 'heirloom' ? 0.13 : finish === 'velvet' ? 0.44 : 0.28;
-    ctx.drawImage(img, 154, 60, 770, 700);
+    ctx.globalAlpha = preset.layout === 'minimal' ? 0.09 : finish === 'heirloom' ? 0.13 : preset.layout === 'editorial' ? 0.15 : finish === 'velvet' ? 0.44 : 0.32;
+    if (preset.layout === 'editorial') ctx.drawImage(img, 350, -40, 730, 730);
+    else if (preset.layout === 'minimal') ctx.drawImage(img, 240, 90, 610, 610);
+    else ctx.drawImage(img, 154, 60, 770, 700);
     ctx.restore();
   }
 }
@@ -106,17 +109,18 @@ export async function downloadWishPng(input) {
   const wish = sanitizeWish(input);
   const theme = getTheme(wish.theme);
   const tone = getTone(wish.tone);
+  const preset = getTemplate(wish.template, wish.theme);
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const c = canvas.getContext('2d');
   if (!c) throw new Error('Canvas is unavailable.');
 
-  background(c, theme, wish.finish);
+  background(c, theme, wish.finish, preset);
   drawTexture(c, wish.finish);
-  await drawArtwork(c, theme, wish.finish);
+  await drawArtwork(c, theme, wish.finish, preset);
 
-  const paper = wish.finish === 'heirloom';
+  const paper = wish.finish === 'heirloom' || preset.layout === 'minimal';
   const ink = paper ? '#4a2a3a' : '#fffaf4';
   const faint = paper ? '#7b5c61' : '#f5e5e4';
   const accent = paper ? '#a47542' : '#fff0c9';
@@ -135,7 +139,7 @@ export async function downloadWishPng(input) {
   c.fillText('W I S H V E R S E', 116, 137);
   c.textAlign = 'right';
   c.font = '600 18px "Space Grotesk",sans-serif';
-  c.fillText(theme.name.toUpperCase(), W - 115, 137);
+  c.fillText(preset.name.toUpperCase(), W - 115, 137, 370);
 
   c.textAlign = 'center';
   c.font = '700 22px "Space Grotesk",sans-serif';
@@ -188,14 +192,14 @@ export async function downloadWishPng(input) {
     });
   }
   centered(c, `With love, ${wish.from}`, 1208, 'italic 39px Georgia,serif', ink, 830);
-  centered(c, `${tone.label.toUpperCase()}   /   ${wish.finish.toUpperCase()}   /   ${theme.name.toUpperCase()}`, 1250, '700 18px "Space Grotesk",sans-serif', faint, 790);
+  centered(c, `${tone.label.toUpperCase()}   /   ${wish.finish.toUpperCase()}   /   ${preset.name.toUpperCase()}`, 1250, '700 18px "Space Grotesk",sans-serif', faint, 790);
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
   if (!blob) throw new Error('PNG generation failed');
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   const filename = wish.to.normalize('NFKD').replace(/[^a-zA-Z0-9-]+/g, '-').slice(0, 32).replace(/^-|-$/g, '').toLowerCase() || 'someone';
-  link.download = `wishverse-${theme.id}-${wish.finish}-${filename}.png`;
+  link.download = `wishverse-${preset.id}-${wish.finish}-${filename}.png`;
   document.body.appendChild(link);
   link.click();
   link.remove();

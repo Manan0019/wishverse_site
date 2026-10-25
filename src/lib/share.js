@@ -1,4 +1,5 @@
 import { DEFAULT_WISH, THEMES, TONES, FINISHES, RELATIONS } from '../data/themes.js';
+import { getTemplate } from '../data/templates.js';
 
 const MAX_LINK_LENGTH = 4200;
 const clip = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
@@ -10,6 +11,7 @@ export function sanitizeWish(input = {}) {
   const finish = FINISHES.some((f) => f.id === input.finish) ? input.finish : DEFAULT_WISH.finish;
   return {
     theme,
+    template: getTemplate(input.template, theme).id,
     tone,
     finish,
     relation,

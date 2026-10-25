@@ -240,3 +240,95 @@ button.opened-memory .memory-revealed{display:block;white-space:pre-wrap;overflo
 .tree-body{width:0;height:0;border-left:110px solid transparent;border-right:110px solid transparent;border-bottom:220px solid #256b44;position:relative;filter:drop-shadow(0 15px 25px rgba(0,0,0,.18))}.tree-body::before{content:'';position:absolute;left:-86px;top:48px;border-left:86px solid transparent;border-right:86px solid transparent;border-bottom:170px solid #2e8051}.tree-body::after{content:'';position:absolute;left:-22px;bottom:-246px;width:44px;height:58px;background:#7c5134;border-radius:0 0 10px 10px}.tree-bauble{position:absolute;width:14px;height:14px;border-radius:50%;background:#ffffff38;box-shadow:0 0 0 1px rgba(255,255,255,.12)}.tree-bauble.lit{background:#ffd58d;box-shadow:0 0 18px #ffd58d}.b1{left:-16px;top:34px}.b2{left:-52px;top:78px}.b3{left:28px;top:92px}.b4{left:-74px;top:134px}.b5{left:62px;top:135px}.b6{left:-12px;top:168px}.b7{left:36px;top:196px}
 @media (max-width:820px){.ritual-panel{grid-template-columns:1fr;padding:20px;gap:20px}.ritual-actions{justify-content:stretch}.ritual-actions .button{flex:1}}
 @media (max-width:570px){.ritual-copy h3{font-size:30px}.ritual-canvas{min-height:260px;padding:14px}.ritual-anniversary{gap:10px}.ritual-bloom{width:92px;height:92px}.ritual-cake{transform:scale(.88)}.ritual-diwali{gap:14px 18px}.diya-base{width:78px;height:36px}.ritual-progress span{font-size:9px}}
+
+/* ==== Phase 5 — Template Universe / 24 curated looks and local draft atelier ==== */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.atelier-heading{margin:20px 0 15px;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.atelier-kicker{display:block;font:700 9px var(--display);letter-spacing:1.7px;color:#ebc7e2;margin-bottom:9px}
+.atelier-heading h3,.draft-title-row h3{font:500 24px/1.15 var(--display);letter-spacing:-1.1px;color:#fff;margin:0 0 7px}
+.atelier-heading p{color:#b9b0c9;font-size:12px;line-height:1.65;margin:0}
+.atelier-surprise{border:1px solid #e8c4e16b;border-radius:999px;padding:11px 14px;min-height:40px;background:linear-gradient(135deg,#d0a4ee24,#f2b0dc10);font:600 11px var(--display);color:#f8dafa;cursor:pointer;transition:transform .2s,border .2s}
+.atelier-surprise:hover{transform:translateY(-2px);border-color:#e8c4e1}
+.template-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:0 0 26px}
+.template-card{display:flex;min-width:0;flex-direction:column;text-align:left;cursor:pointer;padding:7px;border:1px solid #ffffff24;border-radius:18px;color:#fff;background:#ffffff07;transition:transform .22s,border-color .22s,box-shadow .22s}
+.template-card:hover{transform:translateY(-3px);border-color:#ffffff88}
+.template-card.selected{border-color:#f5cbe9;box-shadow:0 0 0 2px #ebaddb41,0 18px 35px #0004;background:#f4c3ec12}
+.template-card:focus-visible{outline:2px solid #ffe9f6;outline-offset:3px}
+.template-art{height:174px;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(143deg,var(--swatch-a),var(--swatch-b) 68%,var(--swatch-c));isolation:isolate}
+.template-art::before{content:'';position:absolute;inset:9px;border:1px solid #fff6;border-radius:9px;pointer-events:none;z-index:2}
+.template-art img{width:140px;height:140px;object-fit:contain;filter:drop-shadow(0 8px 18px #0005);transition:transform .4s}
+.template-card:hover .template-art img{transform:scale(1.09) rotate(-3deg)}
+.template-serial{position:absolute;z-index:4;bottom:14px;left:14px;font:700 8px var(--display);letter-spacing:1.4px;color:#fff}
+.template-editorial{background:linear-gradient(160deg,var(--swatch-a),#171422)}
+.template-editorial img{width:118px;height:118px;transform:translate(27px,-13px) rotate(13deg);opacity:.63;mix-blend-mode:screen}
+.template-editorial::after{content:'WISH';position:absolute;top:65px;left:16px;font:italic 35px var(--serif);letter-spacing:-1px;color:#fff8;z-index:3}
+.template-card:hover .template-editorial img{transform:translate(27px,-13px) scale(1.04) rotate(8deg)}
+.template-minimal{background:linear-gradient(155deg,#fcf7e9,#e3d4bd)}
+.template-minimal::before{border-color:#a5755270}
+.template-minimal img{width:123px;height:123px;opacity:.23;mix-blend-mode:multiply;filter:none}
+.template-minimal::after{content:'For you';position:absolute;top:72px;font:italic 29px var(--serif);color:#705344;z-index:3}
+.template-minimal .template-serial{color:#745a48}
+.template-celestial{background:radial-gradient(circle at 50% 32%,var(--swatch-b),var(--swatch-a) 56%,#0b1029)}
+.template-celestial::after{content:'✦';position:absolute;color:var(--swatch-c);top:13px;right:19px;font-size:22px;text-shadow:0 0 14px currentColor}
+.template-celestial img{width:124px;height:124px;opacity:.7;filter:drop-shadow(0 0 22px var(--swatch-c))}
+.template-card-copy{display:grid;gap:5px;padding:12px 8px 10px}
+.template-card-copy strong{font:600 13px var(--display);color:#fff}
+.template-card-copy small{font:400 10px/1.45 'DM Sans',sans-serif;color:#b5aec5}
+/* Card render styling: preset layouts materially change typography, hierarchy and illustration. */
+.wish-card[data-layout="editorial"],.opened-card[data-layout="editorial"]{background:linear-gradient(158deg,var(--t1),#130f24 89%)}
+.wish-card[data-layout="editorial"] .wish-illustration{width:82%;left:34%;top:-8%;opacity:.2;transform:rotate(14deg)}
+.wish-card[data-layout="editorial"] .wish-card-main{padding-left:10px;padding-right:10px;text-align:left;align-items:flex-start}
+.wish-card[data-layout="editorial"] .wish-card-main h3,.wish-card[data-layout="editorial"] .wish-title,.wish-card[data-layout="editorial"] .wish-card-main p,.wish-card[data-layout="editorial"] .wish-memory-pill{text-align:left;margin-left:0;margin-right:0}
+.wish-card[data-layout="editorial"] .wish-card-main h3{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-2px}
+.wish-card[data-layout="editorial"] .wish-card-icon{display:none}
+.wish-card[data-layout="editorial"] .wish-memory-pill{width:100%;border-radius:0;border-width:1px 0 0;background:none}
+.wish-card[data-layout="editorial"] .wish-card-top{font-weight:700}
+.opened-card[data-layout="editorial"] .opened-illustration{opacity:.18;transform:translate(25%, -8%) rotate(14deg)}
+.opened-card[data-layout="editorial"] #openedName{font-family:var(--serif);font-style:italic}
+.wish-card[data-layout="minimal"],.opened-card[data-layout="minimal"]{background:linear-gradient(148deg,#fff9ec,#ecddc4 70%,#dfc6a4);color:#5b3b43}
+.wish-card[data-layout="minimal"]:before,.opened-card[data-layout="minimal"]:before{background:radial-gradient(ellipse at top,#ffffffb3,transparent 60%)}
+.wish-card[data-layout="minimal"] .wish-illustration{opacity:.09;mix-blend-mode:multiply;filter:none;transform:scale(.83)}
+.wish-card[data-layout="minimal"] .wish-card-icon,.wish-card[data-layout="minimal"] .wish-card-main h3,.wish-card[data-layout="minimal"] .wish-title,.wish-card[data-layout="minimal"] .wish-card-main p,.wish-card[data-layout="minimal"] .wish-card-top,.wish-card[data-layout="minimal"] .wish-card-bottom,.wish-card[data-layout="minimal"] .wish-memory-pill{color:#553845;text-shadow:none}
+.wish-card[data-layout="minimal"] .wish-card-main h3{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-2px}
+.wish-card[data-layout="minimal"] .card-overline{border-color:#94775a54;color:#684e4b;background:#d6b99526}
+.wish-card[data-layout="minimal"] .wish-memory-pill{background:#b8905a17;border-color:#b8905a44}
+.opened-card[data-layout="minimal"] #openedName,.opened-card[data-layout="minimal"] #openedGreeting,.opened-card[data-layout="minimal"] #openedMessage,.opened-card[data-layout="minimal"] #openedOverline,.opened-card[data-layout="minimal"] .opened-signoff,.opened-card[data-layout="minimal"] .opened-relation,.opened-card[data-layout="minimal"] .opened-memory{color:#553845;text-shadow:none}
+.opened-card[data-layout="minimal"] .opened-illustration{mix-blend-mode:multiply;opacity:.13}
+.opened-card[data-layout="minimal"] .opened-memory{background:#b8905a19;border-color:#b8905a55}
+.wish-card[data-layout="celestial"],.opened-card[data-layout="celestial"]{background:radial-gradient(ellipse at 50% 23%,var(--t2),var(--t1) 49%,#070e28 100%);border-color:var(--t3);box-shadow:0 28px 85px #000a,inset 0 0 90px #0004}
+.wish-card[data-layout="celestial"] .wish-illustration,.opened-card[data-layout="celestial"] .opened-illustration{opacity:.55;filter:drop-shadow(0 0 45px var(--t3))}
+.wish-card[data-layout="celestial"] .wish-card-icon{color:var(--t3);font-size:80px;text-shadow:0 0 30px var(--t3)}
+.wish-card[data-layout="celestial"] .wish-card-main h3{font-family:var(--serif);font-style:italic;font-weight:400}
+.wish-card[data-layout="celestial"]::after{border-color:var(--t3);opacity:.55}
+/* Stronger than layout palette override? Let chosen print finish remain a separate option. */
+.wish-card[data-finish="heirloom"][data-layout="celestial"],.opened-card[data-finish="heirloom"][data-layout="celestial"]{background:radial-gradient(circle at 50% 20%,#faf2e6,#d5c29c 100%)}
+.wish-card[data-finish="heirloom"][data-layout="celestial"] .wish-card-icon{color:#a57545}
+.wish-card[data-finish="heirloom"][data-layout="minimal"]{background:linear-gradient(148deg,#fff9ec,#ecddc4 70%,#dfc6a4)}
+/* On-device draft station */
+.draft-station{margin:26px 0 20px;border:1px solid #ffffff23;border-radius:20px;padding:20px;background:linear-gradient(140deg,#ffffff0c,#ffffff05)}
+.draft-title-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.draft-title-row h3{font-size:21px;margin:0}
+.draft-local{font:700 9px var(--display);color:#ddbee0;letter-spacing:1.2px}
+.draft-add{display:flex;align-items:stretch;gap:8px}
+.draft-add input{min-width:0;flex:1;background:#ffffff0c;color:#fff;border:1px solid #ffffff29;border-radius:12px;padding:13px 12px;outline:none;font:500 12px 'DM Sans',sans-serif}
+.draft-add input::placeholder{color:#a69bae}
+.draft-add button{border:0;border-radius:12px;padding:12px 14px;background:#f0cce6;color:#35213c;font:700 11px var(--display);cursor:pointer;white-space:nowrap}
+.draft-add input:focus-visible,.draft-add button:focus-visible{outline:2px solid #f2c8e7;outline-offset:2px}
+.draft-list{margin-top:12px;display:grid;gap:8px}
+.draft-empty,.draft-hint{font:400 11px/1.65 'DM Sans',sans-serif;color:#aaa1b6;margin:9px 0 0}
+.draft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#ffffff08;border:1px solid #ffffff16;border-radius:12px;padding:10px 12px}
+.draft-info{min-width:0;display:flex;flex-direction:column;gap:4px}
+.draft-info strong{font:600 12px var(--display);color:#f7effb;overflow-wrap:anywhere}
+.draft-info span{color:#b9adc5;font-size:10px;line-height:1.5}
+.draft-row-actions{display:flex;gap:7px;flex:none}
+.draft-row-actions button{border:1px solid #ffffff3b;border-radius:999px;background:#ffffff0e;color:#fff;font:600 10px var(--display);cursor:pointer;padding:8px 11px}
+.draft-row-actions .draft-remove{color:#eec2c5;border-color:#f5b0bb4f}
+.draft-row-actions button:focus-visible{outline:2px solid #ffe4ef;outline-offset:2px}
+@media(max-width:570px){.atelier-heading{gap:12px}.atelier-heading h3{font-size:22px}.template-gallery{gap:8px}.template-art{height:139px}.template-art img{width:105px;height:105px}.template-card-copy{padding:9px 5px}.template-card-copy strong{font-size:11px}.template-card-copy small{font-size:9px}.template-serial{font-size:7px;left:9px;bottom:10px}.draft-station{padding:14px}.draft-title-row h3{font-size:19px}.draft-add{flex-wrap:wrap}.draft-add button{flex:none}.draft-info span{font-size:9px}.draft-row-actions button{font-size:9px;padding:7px}.wish-card[data-layout="editorial"] .wish-card-main{padding-left:4px;padding-right:4px}}
+@media(max-width:355px){.template-art{height:119px}.template-art img{width:92px;height:92px}.template-card-copy strong{font-size:10px}.draft-row{align-items:flex-start;flex-direction:column}.draft-row-actions{align-self:flex-end}}
+@media(prefers-reduced-motion:reduce){.template-card,.template-card:hover,.atelier-surprise,.atelier-surprise:hover{transform:none!important}}
+/* Layout with generous editorial whitespace must not cut the signature. */
+.wish-card[data-layout="minimal"]{aspect-ratio:auto;height:auto;min-height:625px}
+.wish-card[data-layout="minimal"] .wish-card-main{padding-block:25px}
+.wish-card[data-layout="minimal"] .wish-card-bottom{margin-top:22px}
+@media(max-width:570px){.wish-card[data-layout="minimal"]{min-height:620px}.wish-card[data-layout="minimal"] .wish-card-main{padding-block:20px}}

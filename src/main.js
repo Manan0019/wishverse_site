@@ -1,4 +1,6 @@
 import { THEMES, TONES, FINISHES, RELATIONS, DEFAULT_WISH, getTheme, getTone, getArtUrl } from './data/themes.js';
+import { TEMPLATES, getTemplatesForTheme, getTemplate } from './data/templates.js';
+import { readDrafts, saveDraft, deleteDraft } from './lib/drafts.js';
 import { sanitizeWish, getSharedWish, makeShareUrl, getWhatsAppUrl } from './lib/share.js';
 import { downloadWishPng } from './lib/download.js';
 
@@ -10,6 +12,7 @@ let toastTimer;
 let soundOn = false;
 let audioContext = null;
 let ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
+let ritualSession = 0;
 
 function applyTheme(element, theme) {
   if (!element) return;
@@ -86,12 +89,125 @@ function buildRelationOptions() {
   $('relationInput').innerHTML = RELATIONS.map((relation) => `<option value="${relation}">${relation}</option>`).join('');
 }
 
+function buildTemplateGallery() {
+  const presets = getTemplatesForTheme(wish.theme);
+  const gallery = $('templateGallery');
+  gallery.replaceChildren();
+  for (const preset of presets) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'template-card';
+    button.dataset.template = preset.id;
+    button.setAttribute('aria-pressed', String(wish.template === preset.id));
+    button.setAttribute('aria-label', `${preset.name} — ${preset.descriptor}`);
+    button.style.setProperty('--swatch-a', preset.colors[0]);
+    button.style.setProperty('--swatch-b', preset.colors[1]);
+    button.style.setProperty('--swatch-c', preset.colors[2]);
+    const painting = document.createElement('span');
+    painting.className = `template-art template-${preset.layout}`;
+    painting.setAttribute('aria-hidden', 'true');
+    const image = document.createElement('img');
+    image.src = getArtUrl(wish.theme);
+    image.alt = '';
+    image.loading = 'lazy';
+    painting.appendChild(image);
+    const seal = document.createElement('span');
+    seal.textContent = `${String(preset.order).padStart(2, '0')} / ${preset.layout.toUpperCase()}`;
+    seal.className = 'template-serial';
+    painting.appendChild(seal);
+    const copy = document.createElement('span');
+    copy.className = 'template-card-copy';
+    const label = document.createElement('strong');
+    label.textContent = preset.name;
+    const desc = document.createElement('small');
+    desc.textContent = preset.descriptor;
+    copy.append(label, desc);
+    button.append(painting, copy);
+    button.addEventListener('click', () => selectTemplate(preset.id));
+    gallery.appendChild(button);
+  }
+  $('templateSummary').textContent = `${getTheme(wish.theme).name}: four distinctive looks made for this moment.`;
+  syncTemplateGallery();
+}
+
+function syncTemplateGallery() {
+  document.querySelectorAll('[data-template]').forEach((element) => {
+    const chosen = element.dataset.template === wish.template;
+    element.classList.toggle('selected', chosen);
+    element.setAttribute('aria-pressed', String(chosen));
+  });
+}
+
+function selectTemplate(id) {
+  wish.template = getTemplate(id, wish.theme).id;
+  updatePreview();
+}
+
+function applyTemplateStyle(element, preset) {
+  if (!element) return;
+  element.dataset.layout = preset.layout;
+  element.style.setProperty('--t1', preset.colors[0]);
+  element.style.setProperty('--t2', preset.colors[1]);
+  element.style.setProperty('--t3', preset.colors[2]);
+}
+
+function renderDrafts() {
+  const container = $('draftList');
+  container.replaceChildren();
+  const entries = readDrafts();
+  if (!entries.length) {
+    const empty = document.createElement('p');
+    empty.className = 'draft-empty';
+    empty.textContent = 'Nothing saved yet. Your first keepsake starts here.';
+    container.appendChild(empty);
+    return;
+  }
+  for (const entry of entries) {
+    const row = document.createElement('div');
+    row.className = 'draft-row';
+    const info = document.createElement('div');
+    info.className = 'draft-info';
+    const name = document.createElement('strong');
+    name.textContent = entry.name;
+    const detail = document.createElement('span');
+    detail.textContent = `${getTheme(entry.wish.theme).name} · ${getTemplate(entry.wish.template,entry.wish.theme).name}`;
+    info.append(name, detail);
+    const actions = document.createElement('div');
+    actions.className = 'draft-row-actions';
+    const load = document.createElement('button');
+    load.type = 'button';
+    load.textContent = 'Open';
+    load.setAttribute('aria-label', `Open ${entry.name}`);
+    load.addEventListener('click', () => {
+      wish = {...entry.wish};
+      updateInputs();
+      buildTemplateGallery();
+      showToast(`Loaded “${entry.name}” — keep creating ✦`);
+    });
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'draft-remove';
+    remove.textContent = 'Remove';
+    remove.setAttribute('aria-label', `Remove ${entry.name}`);
+    remove.addEventListener('click', () => {
+      if (deleteDraft(entry.id)) {
+        renderDrafts();
+        showToast(`Removed “${entry.name}” from this browser.`);
+      } else showToast('Could not remove this draft. Browser storage may be unavailable.');
+    });
+    actions.append(load, remove);
+    row.append(info, actions);
+    container.appendChild(row);
+  }
+}
+
 function selectTheme(id) {
   const previous = getTheme(wish.theme);
   const next = getTheme(id);
   const shouldResetMessage = !wish.message.trim() || Object.values(previous.messages).includes(wish.message);
   const shouldResetMemory = !wish.memory.trim() || wish.memory === DEFAULT_WISH.memory || THEMES.some((item) => item.headline === wish.memory);
   wish.theme = next.id;
+  wish.template = getTemplatesForTheme(next.id)[0].id;
   if (shouldResetMessage) {
     wish.message = suggestedMessage(next, wish.tone);
     $('messageInput').value = wish.message;
@@ -100,6 +216,7 @@ function selectTheme(id) {
     wish.memory = next.headline;
     $('memoryInput').value = wish.memory;
   }
+  buildTemplateGallery();
   updatePreview();
 }
 
@@ -107,6 +224,7 @@ function updatePreview() {
   const theme = getTheme(wish.theme);
   const tone = getTone(wish.tone);
   const normalized = sanitizeWish(wish);
+  const preset = getTemplate(normalized.template, normalized.theme);
 
   $('cardRecipient').textContent = normalized.to;
   $('cardSender').textContent = normalized.from;
@@ -123,6 +241,7 @@ function updatePreview() {
   $('previewTheme').textContent = theme.name.toUpperCase();
   $('previewTone').textContent = `${tone.label.toUpperCase()} · ${normalized.finish.toUpperCase()}`;
   $('previewOccasionLine').textContent = theme.iconLabel;
+  $('previewTemplate').textContent = preset.name.toUpperCase();
   $('charCount').textContent = `${normalized.message.length} / 260`;
   $('memoryCount').textContent = `${normalized.memory.length} / 100`;
   $('helperHeadline').textContent = theme.headline;
@@ -134,6 +253,9 @@ function updatePreview() {
   applyTheme($('wishCard'), theme);
   applyTheme($('previewOuter'), theme);
   applyTheme($('recipientScene'), theme);
+  applyTemplateStyle($('wishCard'), preset);
+  applyTemplateStyle($('previewOuter'), preset);
+  syncTemplateGallery();
   document.querySelectorAll('[data-finish]').forEach((element) => {
     const selected = element.dataset.finish === normalized.finish;
     element.classList.toggle('active', selected);
@@ -160,6 +282,7 @@ function updateInputs() {
   $('secretToggle').checked = wish.secret;
   $('particlesToggle').checked = wish.particles;
   $('hideMemoryToggle').checked = wish.hideMemory;
+  buildTemplateGallery();
   updatePreview();
 }
 
@@ -247,7 +370,7 @@ function ritualConfig(themeId) {
 
 function renderRitual(themeId) {
   const config = ritualConfig(themeId);
-  ritualState = { theme: themeId, progress: 0, goal: config.goal, mode: config.mode, complete: false };
+  ritualState = { theme: themeId, progress: 0, goal: config.goal, mode: config.mode, complete: false, session: ++ritualSession };
   $('ritualLabel').textContent = config.label;
   $('ritualTitle').textContent = config.title;
   $('ritualInstruction').textContent = config.instruction;
@@ -280,6 +403,7 @@ function updateRitualProgress() {
 }
 
 function finishRitual() {
+  if ($('recipientView').hidden || $('recipientRitual').hidden || ritualState.complete) return;
   ritualState.complete = true;
   $('recipientRitual').hidden = true;
   revealCard();
@@ -290,7 +414,8 @@ function ritualStepDone(message) {
   updateRitualProgress();
   if (message) showToast(message);
   if (ritualState.progress >= ritualState.goal) {
-    setTimeout(() => finishRitual(), 460);
+    const activeSession = ritualState.session;
+    setTimeout(() => { if (ritualState.session === activeSession) finishRitual(); }, 460);
   }
 }
 
@@ -301,8 +426,9 @@ function startCountdownRitual() {
   const core = $('countdownCore');
   const bursts = $('countdownBursts');
   const steps = ['3', '2', '1', '✨'];
+  const activeSession = ritualState.session;
   steps.forEach((step, i) => {
-    setTimeout(() => { if (core) core.textContent = step; }, i * 500);
+    setTimeout(() => { if (ritualState.session === activeSession && core) core.textContent = step; }, i * 500);
   });
   for (let i = 0; i < 18; i += 1) {
     const dot = document.createElement('span');
@@ -313,7 +439,7 @@ function startCountdownRitual() {
     setTimeout(() => dot.remove(), 1800);
   }
   if (soundOn) playChime();
-  setTimeout(() => ritualStepDone('Midnight magic unlocked ✨'), 2100);
+  setTimeout(() => { if (ritualState.session === activeSession) ritualStepDone('Midnight magic unlocked ✨'); }, 2100);
 }
 
 function triggerActionRitual() {
@@ -406,13 +532,15 @@ function setRecipientContent(input) {
   const sanitized = sanitizeWish(input);
   const theme = getTheme(sanitized.theme);
   const tone = getTone(sanitized.tone);
+  const preset = getTemplate(sanitized.template, sanitized.theme);
   openedWish = sanitized;
   applyTheme($('recipientView'), theme);
   applyTheme($('openedCard'), theme);
+  applyTemplateStyle($('openedCard'), preset);
   $('receiverFrom').textContent = `A GIFTED GREETING FROM ${sanitized.from.toUpperCase()}`;
   $('receiverHello').replaceChildren(document.createTextNode(`${sanitized.to}, this one’s`), document.createElement('br'));
   const em = document.createElement('em'); em.textContent = 'crafted for you.'; $('receiverHello').appendChild(em);
-  $('openedOverline').textContent = `${theme.label} · ${tone.label.toUpperCase()}`;
+  $('openedOverline').textContent = `${preset.name.toUpperCase()} · ${tone.label.toUpperCase()}`;
   $('openedName').textContent = sanitized.to;
   $('openedGreeting').textContent = theme.greeting;
   $('openedMessage').textContent = sanitized.message;
@@ -447,9 +575,10 @@ function closeReceiver({ reply = false } = {}) {
   $('confettiLayer').replaceChildren();
   $('recipientRitual').hidden = true;
   ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
+  ritualSession += 1;
   if (window.location.search.includes('wish=')) window.history.replaceState({}, '', window.location.pathname);
   if (reply && openedWish) {
-    wish = { ...DEFAULT_WISH, theme: openedWish.theme, tone: openedWish.tone, relation: openedWish.relation, finish: openedWish.finish, hideMemory: openedWish.hideMemory, to: openedWish.from, from: '', memory: getTheme(openedWish.theme).headline, message: suggestedMessage(getTheme(openedWish.theme), openedWish.tone) };
+    wish = { ...DEFAULT_WISH, theme: openedWish.theme, tone: openedWish.tone, relation: openedWish.relation, finish: openedWish.finish, template: openedWish.template, hideMemory: openedWish.hideMemory, to: openedWish.from, from: '', memory: getTheme(openedWish.theme).headline, message: suggestedMessage(getTheme(openedWish.theme), openedWish.tone) };
     updateInputs();
     requestAnimationFrame(() => $('studio').scrollIntoView({ behavior: 'smooth' }));
     $('fromInput').focus({ preventScroll: true });
@@ -457,6 +586,22 @@ function closeReceiver({ reply = false } = {}) {
 }
 
 function bindEvents() {
+  $('surpriseTemplate').addEventListener('click', () => {
+    const choices = getTemplatesForTheme(wish.theme).filter((preset) => preset.id !== wish.template);
+    const next = choices[Math.floor(Math.random() * choices.length)];
+    selectTemplate(next.id);
+    showToast(`New look: ${next.name} ✦`);
+  });
+  $('saveDraft').addEventListener('click', () => {
+    const record = saveDraft($('draftName').value, wish);
+    if (!record) return showToast('Could not save. This browser may block local storage.');
+    $('draftName').value = '';
+    renderDrafts();
+    showToast(`Saved “${record.name}” on this device.`);
+  });
+  $('draftName').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') { event.preventDefault(); $('saveDraft').click(); }
+  });
   $('toInput').addEventListener('input', (event) => { wish.to = event.target.value; updatePreview(); });
   $('fromInput').addEventListener('input', (event) => { wish.from = event.target.value; updatePreview(); });
   $('relationInput').addEventListener('change', (event) => { wish.relation = event.target.value; updatePreview(); });
@@ -547,7 +692,7 @@ function initFromSharedUrl() {
 function initYear() { const yearEl = $('year'); if (yearEl) yearEl.textContent = String(new Date().getFullYear()); }
 
 function init() {
-  buildThemeCards(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); bindEvents(); starField(); initYear(); updateInputs(); initFromSharedUrl();
+  buildThemeCards(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); bindEvents(); starField(); initYear(); updateInputs(); renderDrafts(); initFromSharedUrl();
 }
 
 init();
