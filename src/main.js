@@ -6,6 +6,7 @@ import { downloadWishPng } from './lib/download.js';
 import { photoFileToDataUrl, blobToDataUrl, downloadKeepsake, MAX_AUDIO_BYTES } from './lib/memory.js';
 import { SOUNDSCAPES, playSoundscape, safeSoundscape } from './lib/soundscapes.js';
 import { tr, safeLocale, occasionLabel, greetingFor, suggestedMessageFor, isSuggestedMessage } from './data/i18n.js';
+import {getShareText,shareLinks,makeQRCanvas,downloadSharePoster} from './lib/share-studio.js';
 
 const $ = (id) => document.getElementById(id);
 const icon = (name) => `<svg class="ico"><use href="#i-${name}"/></svg>`;
@@ -22,6 +23,8 @@ let voiceStream = null;
 let voiceTimer = null;
 let recordingStartedAt = 0;
 let mediaGeneration = 0;
+let previousShareFocus = null;
+let selectedReaction = null;
 
 
 function applyTheme(element, theme) {
@@ -54,6 +57,7 @@ function applyTranslations(lang) {
     '#guidesHeading': tr(lang,'occasionGuide'),
     '#guidesDescription': tr(lang,'guidesDesc'),
     '#copyLink': tr(lang,'copyLink'),
+    '#openShareStudio': tr(lang,'shareStudio'),
     '#shareWhatsapp': tr(lang,'whatsapp'),
     '#downloadPng': tr(lang,'download'),
     '#previewWish': tr(lang,'preview'),
@@ -389,6 +393,57 @@ async function copyShareUrl() {
 
 function closeFallback() { $('shareFallback').hidden = true; }
 
+function openShareStudio() {
+  previousShareFocus=document.activeElement;
+  const links=shareLinks(wish), normalized=sanitizeWish(wish);
+  $('shareUrlText').value=links.link;
+  $('shareMiniTitle').textContent=`For ${normalized.to}`;
+  $('shareMiniSubtitle').textContent=`${getTheme(normalized.theme).name} • With love from ${normalized.from}`;
+  $('shareMiniArt').textContent=getTheme(normalized.theme).symbol;
+  $('shareSafetyText').textContent=(media.photo||media.voice)
+    ? 'This link contains your written greeting, design and names only. Attached photos and recordings need a separate keepsake file. Anyone with the link can read its text.'
+    : 'The link contains the names and written greeting. Anyone with the complete link can read them. No photos or voice files are uploaded.';
+  $('shareQrCanvas').hidden=true;
+  $('shareQrUnavailable').hidden=true;
+  $('downloadQRPoster').disabled=false;
+  try {
+    const qr=makeQRCanvas(links.link,600),dst=$('shareQrCanvas');
+    dst.width=dst.height=600;dst.getContext('2d').drawImage(qr,0,0);
+    dst.hidden=false;
+  } catch (error) {
+    $('shareQrUnavailable').textContent=error.message;
+    $('shareQrUnavailable').hidden=false;
+    $('downloadQRPoster').disabled=true;
+  }
+  $('shareStudio').hidden=false;
+  document.body.classList.add('share-studio-open');
+  $('shareStudioClose').focus();
+}
+function closeShareStudio() {
+  $('shareStudio').hidden=true;
+  document.body.classList.remove('share-studio-open');
+  previousShareFocus?.focus?.({preventScroll:true});
+}
+function shareToUrl(url) {
+  const tab=window.open(url,'_blank','noopener,noreferrer');
+  if (!tab) window.location.href=url;
+}
+function shareNativeOrFallback(payload) {
+  if (navigator.share) {
+    // Called directly from user interaction to preserve transient activation.
+    navigator.share(payload).catch(error=>{
+      if(error.name!=='AbortError') showToast('Your device could not open the share menu. Try Copy link or WhatsApp.');
+    });
+  } else {
+    showToast('Native sharing is unavailable here. Use Copy link, WhatsApp, Email or Telegram.');
+  }
+}
+function reactionMessage(reaction) {
+  const from=openedWish?.from || 'you';
+  return `Thank you, ${from}! Your Wishverse greeting ${reaction.toLowerCase()} 💖`;
+}
+
+
 function starField() {
   const layer = $('recipientStars');
   let seed = 41;
@@ -605,6 +660,9 @@ function setRecipientContent(input) {
   const tone = getTone(sanitized.tone);
   const preset = getTemplate(sanitized.template, sanitized.theme);
   openedWish = sanitized;
+  selectedReaction=null;
+  $('sendReaction').disabled=true;
+  $('reactionOptions').querySelectorAll('[data-reaction]').forEach(x=>x.setAttribute('aria-pressed','false'));
   applyTheme($('recipientView'), theme);
   applyTheme($('openedCard'), theme);
   applyTemplateStyle($('openedCard'), preset);
@@ -834,6 +892,32 @@ function bindEvents() {
     updatePreview();
     showToast('Fresh message suggestion loaded. Make it yours ✨');
   });
+  $('openShareStudio').addEventListener('click',openShareStudio);
+  $('shareStudioClose').addEventListener('click',closeShareStudio);
+  $('shareStudioBackdrop').addEventListener('click',closeShareStudio);
+  $('shareUrlText').addEventListener('click',()=> $('shareUrlText').select());
+  $('shareCopy').addEventListener('click',copyShareUrl);
+  $('shareNative').addEventListener('click',()=>shareNativeOrFallback({title:'A personal Wishverse wish',text:getShareText(wish),url:makeShareUrl(wish)}));
+  $('shareWhatsAppStudio').addEventListener('click',()=>shareToUrl(shareLinks(wish).whatsapp));
+  $('shareTelegram').addEventListener('click',()=>shareToUrl(shareLinks(wish).telegram));
+  $('shareEmail').addEventListener('click',()=>window.location.assign(shareLinks(wish).email));
+  $('downloadQRPoster').addEventListener('click',async()=>{
+    const b=$('downloadQRPoster');b.disabled=true;
+    try{await downloadSharePoster(wish,makeShareUrl(wish));showToast('Printable QR invitation saved.');}
+    catch(e){showToast(e.message || 'Could not generate the QR invitation.');}
+    finally{b.disabled=false;}
+  });
+  $('reactionOptions').querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',()=>{
+    selectedReaction=b.dataset.reaction;
+    $('reactionOptions').querySelectorAll('[data-reaction]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    $('sendReaction').disabled=false;
+  }));
+  $('sendReaction').addEventListener('click',()=>{
+    if(!selectedReaction)return;
+    const message=reactionMessage(selectedReaction);
+    if(navigator.share){shareNativeOrFallback({title:'Thanks for your wish!',text:message});}
+    else shareToUrl('https://wa.me/?text='+encodeURIComponent(message));
+  });
   $('copyLink').addEventListener('click', copyShareUrl);
   $('shareWhatsapp').addEventListener('click', () => {
     warnIfMediaOnLink();
@@ -911,7 +995,15 @@ function bindEvents() {
     const expanded = $('menuToggle').getAttribute('aria-expanded') === 'true'; $('menuToggle').setAttribute('aria-expanded', String(!expanded)); $('mobileNav').hidden = expanded;
   });
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab' && !$('shareStudio').hidden) {
+      const focusables=Array.from($('shareStudio').querySelectorAll('button:not([disabled]),input:not([disabled])')).filter(n=>n.getClientRects().length);
+      const first=focusables[0],last=focusables[focusables.length-1];
+      if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+    }
     if (event.key === 'Escape') {
+      if (!$('shareStudio').hidden) {closeShareStudio();return;}
+
       if (!$('mobileNav').hidden) { $('mobileNav').hidden = true; $('menuToggle').setAttribute('aria-expanded', 'false'); $('menuToggle').focus(); }
       if (!$('shareFallback').hidden) closeFallback();
       if (!$('recipientView').hidden) closeReceiver();

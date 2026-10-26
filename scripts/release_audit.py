@@ -13,7 +13,7 @@ DOMAIN='greetings.mananbhayani.online'
 PUBLIC_REQUIRED=[
   'index.html','about.html','privacy.html','help.html','offline.html','404.html',
   'site.webmanifest','sw.js','icon-192.png','icon-512.png','robots.txt','sitemap.xml',
-  'og-preview.png','favicon.svg','_headers','src/styles.css','src/main.js'
+  'og-preview.png','favicon.svg','_headers','src/styles.css','src/main.js','src/lib/share-studio.js','src/lib/qr-vendor.js','src/lib/QR_LICENSE.txt'
 ]
 OCCASIONS=['birthday','anniversary','diwali','rakhi','newyear','christmas']
 

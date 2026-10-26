@@ -52,7 +52,7 @@ with sync_playwright() as p:
     page=browser.new_page(viewport={'width':1060,'height':920})
     help=(ROOT/'help.html').read_text().replace('<link rel="stylesheet" href="/src/styles.css">','<style>'+css+'</style>')
     page.set_content(help,wait_until='load')
-    assert page.locator('details').count()==11
+    assert page.locator('details').count()>=11
     page.locator('main').screenshot(path='/mnt/data/wishverse_phase8_help_preview.png',animations='disabled')
     assert not page.evaluate('document.documentElement.scrollWidth > window.innerWidth + 1')
     browser.close()

@@ -56,3 +56,8 @@ Official Cloudflare references:
 - https://developers.cloudflare.com/pages/get-started/direct-upload/
 - https://developers.cloudflare.com/pages/configuration/custom-domains/
 - https://developers.cloudflare.com/pages/configuration/headers/
+
+
+## Phase 9 — printable QR invitations
+
+A downloaded QR invitation encodes `https://greetings.mananbhayani.online/#wish=...` and will not resolve until the website is actually deployed at that address. Use the production domain before printing real invitations. No QR generation service or new backend is necessary. Native sharing is limited by browser support and generally requires HTTPS; fallback share targets remain available.

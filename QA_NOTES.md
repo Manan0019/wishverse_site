@@ -27,3 +27,12 @@ Date: 25 October 2026
 - Backend/cloud photo & voice sharing is only an architectural plan, not part of this package.
 
 **Conclusion:** Locally validated static release package, **not an approved public launch**.
+
+
+## Phase 9 — Share Studio acceptance
+
+- Static Share Studio, QR invitation export, five destination choices, and recipient reactions implemented.
+- QR encoder is self-hosted under the MIT license; no external QR-image request.
+- Downloaded 1600×2000 invitation was decoded with pyzbar successfully, producing the full personalized link.
+- Playwright isolated UI checks at 1440px, 390px and 320px exercised QR canvas creation, poster download, native-share fallback, ESC close, and recipient reaction selection.
+- Launch still requires live domain/DNS verification and a real-mobile HTTPS share test.

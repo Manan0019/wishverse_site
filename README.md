@@ -1,8 +1,18 @@
-# Wishverse — Phase 8: Public Launch & Production Hardening
+# Wishverse — Phase 9: Share Studio & QR Invitations
 
 A responsive, static, no-account greeting platform for `greetings.mananbhayani.online`. **Not yet deployed**. This release builds on Phase 7 and keeps all prior functionality intact.
 
-## New in Phase 8
+## New in Phase 9
+
+- Premium Share Studio modal with native share (where supported), copy link, WhatsApp, Telegram and email.
+- On-device QR generation with no external image API, and downloadable 1600 × 2000 branded QR invitation PNG. QR code contains the text-based personalized wish link, never uploaded photos/audio.
+- Real scannability tested via a QR decoder on the downloaded poster for the default greeting. To keep printed QR codes readable, overly long links are offered through ordinary sharing instead of dense QR.
+- Recipient thank-you reactions (4 emotions); a sender is contacted only when the recipient explicitly chooses a share target. No server, tracking, inbox, or reactions database.
+- On mobile, the Share Studio is an independently scrollable overlay.
+- Open-source QR encoder adapted from Kazuhiko Arase MIT-licensed implementation (full notice in `src/lib/QR_LICENSE.txt`).
+- Added Phase 9 tests while retaining the Phase 8 tests and deployment audit.
+
+## From Phase 8
 
 - Progressive web app: manifest, icons, offline fallback, public asset cache (no user media/drafts in SW)
 - Better share-mode disclosure beside the editor's send controls
@@ -34,7 +44,7 @@ Then open `http://localhost:5173`. Microphone support works on localhost or HTTP
 
 ```bash
 npm test
-python3 scripts/phase7-browser-qa.py
+python3 scripts/phase9-browser-qa.py
 npm run audit
 ```
 
@@ -50,3 +60,7 @@ For continual upgrades, prefer **Git integration** before you create the Pages p
 See `DEPLOYMENT.md`, `LAUNCH_CHECKLIST.md`, `MEDIA_LINK_ARCHITECTURE.md` and `RELEASE_AUDIT.json` for exact status and responsibilities.
 
 **Not done:** live deployment, domain change, working support contact, AdSense, cloud media uploads, real-device QA.
+
+## Release transparency
+
+Still a static, unhosted prototype until the owner connects Cloudflare and the DNS name. Native sharing must be checked on actual Android/iPhone browsers after HTTPS deployment. Personalized QR codes are only useful once the greeting subdomain is live; before then they point to a not-yet-hosted domain. AdSense is not installed.
