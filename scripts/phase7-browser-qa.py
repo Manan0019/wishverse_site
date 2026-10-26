@@ -10,7 +10,7 @@ css=(ROOT/'src/styles.css').read_text()
 art={p.stem:'data:image/svg+xml;base64,'+base64.b64encode(p.read_bytes()).decode() for p in (ROOT/'assets/art').glob('*.svg')}
 for name,url in art.items(): html=html.replace(f'/assets/art/{name}.svg',url)
 parts=[]
-for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
+for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/vault.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
     src=(ROOT/filename).read_text()
     src=re.sub(r'^import\s+.*?;\s*$', '', src, flags=re.M)
     src=re.sub(r'\bexport\s+(?=(const|function|async function|class|let)\b)', '', src)

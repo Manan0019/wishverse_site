@@ -8,7 +8,7 @@ ART={p.stem:'data:image/svg+xml;base64,'+base64.b64encode(p.read_bytes()).decode
 html=(ROOT/'index.html').read_text();css=(ROOT/'src/styles.css').read_text()
 for name,url in ART.items():html=html.replace(f'/assets/art/{name}.svg',url)
 parts=[]
-for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
+for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/vault.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
     code=(ROOT/filename).read_text()
     code=re.sub(r'^import\s+.*?;\s*$', '', code,flags=re.M)
     code=re.sub(r'\bexport\s+(?=(const|function|async function|class|let)\b)', '', code)
@@ -28,7 +28,7 @@ with sync_playwright() as p:
         page.evaluate("() => {const data=new Map();Object.defineProperty(window,'localStorage',{value:{getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)},configurable:true});}")
         page.set_content(html,wait_until='load',timeout=30000)
         page.locator('#studio').scroll_into_view_if_needed()
-        assert 'Aarohi' in page.locator('#sharingReviewSummary').inner_text()
+        assert 'Anaya' in page.locator('#sharingReviewSummary').inner_text()
         page.locator('#toInput').fill('જય રાધે ✨')
         assert 'જય રાધે' in page.locator('#sharingReviewSummary').inner_text()
         page.evaluate("() => {media.photo='data:image/jpeg;base64,aGVsbG8=';setPhotoUI();}")

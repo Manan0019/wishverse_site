@@ -1,3 +1,14 @@
+# Phase 12 QA — Secret Wish Vault
+
+- Source: user-uploaded `wishverse_site.zip`, extracted without `.git`.
+- Updated demo recipient: Anaya, including HTML, defaults and regression fixture references.
+- `npm test`: PASS, Phases 1–12.
+- `phase12-browser-qa.py`: desktop 1440x900, mobile 390x844, narrow mobile 320x720 all PASS. Recipient vault opening/closing, three-gift reveal, disabled mode, card follow/dock, no JavaScript page errors, no horizontal overflow.
+- `npm run audit`: PASS; clean Cloudflare dist with zero errors/warnings.
+- Long Gujarati text + Storybook + Vault round-trip: PASS after increasing share payload ceiling.
+- Standalone keepsake escaping for user-supplied HTML: PASS.
+- Existing site remains unhosted; real iOS/Android, support contact, Cloudflare DNS, legal/AdSense review pending.
+
 # Phase 11 Verification
 
 - Complete cumulative copy from Phase 10, verified.

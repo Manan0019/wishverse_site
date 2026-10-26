@@ -9,7 +9,7 @@ OUT=Path('/mnt/data')
 ART={p.stem:'data:image/svg+xml;base64,'+base64.b64encode(p.read_bytes()).decode() for p in (ROOT/'assets/art').glob('*.svg')}
 html=(ROOT/'index.html').read_text();css=(ROOT/'src/styles.css').read_text()
 for name,url in ART.items(): html=html.replace(f'/assets/art/{name}.svg',url)
-filenames=['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']
+filenames=['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/vault.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']
 parts=[]
 for filename in filenames:
     code=(ROOT/filename).read_text()
@@ -34,7 +34,7 @@ with sync_playwright() as p:
         page.evaluate("""() => {const d=new Map();Object.defineProperty(window,'localStorage',{value:{getItem:k=>d.get(k)??null,setItem:(k,v)=>d.set(k,v)},configurable:true});}""")
         page.set_content(html,wait_until='load',timeout=30000)
         print('Loaded',label,flush=True)
-        page.locator('#toInput').fill('Aarohi')
+        page.locator('#toInput').fill('Anaya')
         page.locator('#fromInput').fill('Manan')
         (page.evaluate('openShareStudio()') if label=='small-mobile' else page.locator('#openShareStudio').click())
         print('Opened Share Studio',label,flush=True)
@@ -42,7 +42,7 @@ with sync_playwright() as p:
         assert page.locator('#shareQrCanvas').is_visible()
         url=page.locator('#shareUrlText').input_value()
         assert url.startswith('https://greetings.mananbhayani.online/#wish=')
-        assert page.locator('#shareMiniTitle').inner_text()=='For Aarohi'
+        assert page.locator('#shareMiniTitle').inner_text()=='For Anaya'
         count=page.locator('#shareQrCanvas').evaluate('(el)=>{const a=el.getContext("2d").getImageData(0,0,el.width,el.height).data;let dark=0;for(let i=0;i<a.length;i+=4){if(a[i]<80)dark++}return dark}')
         assert count>1000, count
         if label=='desktop':

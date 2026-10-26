@@ -9,6 +9,7 @@ import { tr, safeLocale, occasionLabel, greetingFor, suggestedMessageFor, isSugg
 import {getShareText,shareLinks,makeQRCanvas,downloadSharePoster} from './lib/share-studio.js';
 import {MOTION_PRESETS, GIFT_SEALS, sealSymbol} from './lib/motion.js';
 import { buildStory, storySuggestions } from './lib/storybook.js';
+import { VAULT_GIFTS, buildVault, vaultSuggestions } from './lib/vault.js';
 
 const $ = (id) => document.getElementById(id);
 const icon = (name) => `<svg class="ico"><use href="#i-${name}"/></svg>`;
@@ -34,6 +35,7 @@ let burstTimer = null;
 let lastVisualSignature = "";
 let visualSwapTimer = null;
 let storyPage = 0;
+let openedVaultGifts = new Set();
 
 
 function applyTheme(element, theme) {
@@ -332,6 +334,8 @@ function updatePreview() {
   $('motifThree').textContent = theme.motifs[2];
   syncSoundscapeOptions();
   syncStoryEditor(normalized);
+  syncVaultEditor(normalized);
+  syncWishCoach(normalized);
 
   applyTheme($('wishCard'), theme);
   applyTheme($('previewOuter'), theme);
@@ -384,6 +388,8 @@ function updateInputs() {
   $('hideMemoryToggle').checked = wish.hideMemory;
   $('storyEnabled').checked = Boolean(wish.storyEnabled);
   for (const key of ['storySpark','storyMoment','storyPromise']) $(key).value = wish[key] || '';
+  $('vaultEnabled').checked = Boolean(wish.vaultEnabled);
+  for (const gift of VAULT_GIFTS) $(gift.key).value = wish[gift.key] || '';
   syncMotionControls();
   syncSoundscapeOptions();
   buildTemplateGallery();
@@ -748,6 +754,7 @@ function setRecipientContent(input) {
   $('openedCard').dataset.finish = sanitized.finish;
   $('openedCard').dataset.motion = sanitized.motion;
   $('openedGiftSeal').textContent = sealSymbol(sanitized.seal);
+  renderRecipientVault(sanitized);
   $('openedCard').querySelectorAll('[data-scene-glyph]').forEach((el,i)=>{el.textContent=theme.motifs[i%theme.motifs.length];});
   $('openedCard').classList.toggle('name-long', sanitized.to.length > 17);
   $('openedCard').classList.toggle('long-copy', sanitized.message.length > 170);
@@ -783,6 +790,7 @@ function closeReceiver({ reply = false } = {}) {
   $('recipientRitual').hidden = true;
   $('recipientStory').hidden = true;
   storyPage = 0;
+  openedVaultGifts.clear();
   ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
   ritualSession += 1;
   if (getSharedWish()) window.history.replaceState({}, '', window.location.pathname);
@@ -1129,6 +1137,111 @@ function syncStoryEditor(normalized = sanitizeWish(wish)) {
   $('storyCounter').textContent = normalized.storyEnabled ? `${filled} of 3 personal chapters written` : 'Story mode off';
 }
 
+function syncVaultEditor(normalized = sanitizeWish(wish)) {
+  $('vaultFields').hidden = !normalized.vaultEnabled;
+  $('vaultEnabled').checked = normalized.vaultEnabled;
+  const count = VAULT_GIFTS.filter(gift => Boolean(normalized[gift.key])).length;
+  $('vaultCounter').textContent = normalized.vaultEnabled ? `${count} of 3 surprises personalized` : 'Wish Vault is off';
+}
+
+function syncWishCoach(normalized = sanitizeWish(wish)) {
+  // A lightweight, local writing guide. Not AI and not a quality rating of a person.
+  const recipient = String(wish.to || '').trim();
+  const sender = String(wish.from || '').trim();
+  const message = String(wish.message || '').trim();
+  const isOriginal = message.length >= 35 && !isSuggestedMessage(getTheme(wish.theme), message);
+  const hasExtra = Boolean(String(wish.memory || '').trim()) || normalized.storyEnabled || normalized.vaultEnabled;
+  const signals = [recipient && recipient !== DEFAULT_WISH.to, sender && sender !== DEFAULT_WISH.from, isOriginal, hasExtra];
+  const count = signals.filter(Boolean).length;
+  $('coachScore').textContent = `${count} / 4 thoughtful touches`;
+  $('coachFill').style.width = `${count * 25}%`;
+  const tips = [
+    !signals[0] && 'Replace the sample recipient name to make this wish theirs.',
+    !signals[1] && 'Add your own sender name so they know who made this.',
+    !signals[2] && 'Write a few of your own words — even one honest sentence feels special.',
+    !signals[3] && 'Add a memory, story, or three tiny surprises for an extra personal touch.',
+    'Beautifully personal. Open recipient preview and see their full experience. ✦'
+  ];
+  $('coachTip').textContent = tips.find(Boolean);
+}
+
+function renderRecipientVault(input) {
+  const normalized = sanitizeWish(input);
+  openedVaultGifts.clear();
+  $('recipientVault').hidden = !normalized.vaultEnabled;
+  const container = $('vaultGifts');
+  container.replaceChildren();
+  if (!normalized.vaultEnabled) return;
+  buildVault(normalized).forEach((gift, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'vault-gift';
+    button.dataset.giftIndex = String(index);
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-label', `Unwrap gift ${index + 1}: ${gift.title}`);
+    const front = document.createElement('span');
+    front.className = 'vault-face vault-front';
+    const symbol = document.createElement('span');
+    symbol.className = 'vault-gift-icon';
+    symbol.textContent = gift.icon;
+    const caption = document.createElement('span');
+    caption.className = 'vault-gift-label';
+    caption.textContent = gift.label;
+    const invitation = document.createElement('span');
+    invitation.className = 'vault-gift-invitation';
+    invitation.textContent = 'Tap to unwrap';
+    front.append(symbol, caption, invitation);
+    const back = document.createElement('span');
+    back.className = 'vault-face vault-back';
+    const label = document.createElement('strong');
+    label.textContent = gift.title;
+    const message = document.createElement('span');
+    message.className = 'vault-gift-message';
+    message.textContent = gift.text;
+    back.append(label, message);
+    button.append(front, back);
+    container.appendChild(button);
+  });
+  updateVaultProgress();
+}
+
+function updateVaultProgress() {
+  $('vaultProgress').textContent = `${openedVaultGifts.size} of 3 gifts unwrapped`;
+  $('vaultOpenAll').disabled = openedVaultGifts.size === 3;
+  $('vaultOpenAll').textContent = openedVaultGifts.size === 3 ? 'All gifts opened ♡' : 'Unwrap all ✦';
+}
+
+function unwrapGift(button) {
+  const index = Number(button?.dataset.giftIndex);
+  if (!Number.isInteger(index) || index < 0 || index >= 3 || openedVaultGifts.has(index)) return;
+  openedVaultGifts.add(index);
+  button.classList.add('is-open');
+  button.setAttribute('aria-expanded', 'true');
+  button.setAttribute('aria-label', `Opened gift ${index + 1}`);
+  updateVaultProgress();
+  if (openedWish?.particles && openedVaultGifts.size === 3) burstStars(32);
+}
+
+function bindVaultEditor() {
+  $('vaultEnabled').addEventListener('change', event => {wish.vaultEnabled = event.target.checked; syncVaultEditor(); syncWishCoach();});
+  for (const gift of VAULT_GIFTS) {
+    $(gift.key).addEventListener('input', event => {wish[gift.key] = event.target.value; syncVaultEditor();});
+  }
+  $('vaultInspire').addEventListener('click', () => {
+    const suggestions = vaultSuggestions(wish.theme, wish.lang);
+    VAULT_GIFTS.forEach((gift, index) => {
+      if (!String(wish[gift.key] || '').trim()) {
+        wish[gift.key] = suggestions[index];
+        $(gift.key).value = suggestions[index];
+      }
+    });
+    syncVaultEditor();
+    showToast('Three thoughtful starters added. Edit them to make each gift yours.');
+  });
+  $('vaultGifts').addEventListener('click', event => unwrapGift(event.target.closest('[data-gift-index]')));
+  $('vaultOpenAll').addEventListener('click', () => $('vaultGifts').querySelectorAll('[data-gift-index]').forEach(unwrapGift));
+}
+
 function bindStoryEditor() {
   $('storyEnabled').addEventListener('change', event => {
     wish.storyEnabled = event.target.checked;
@@ -1162,6 +1275,7 @@ function bindStoryEditor() {
 }
 
 function bindEvents() {
+  bindVaultEditor();
   bindStoryEditor();
   bindMotionExperience();
   $('languageSelect').addEventListener('change', event => changeGreetingLanguage(event.target.value));

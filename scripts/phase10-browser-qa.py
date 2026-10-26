@@ -7,7 +7,7 @@ OUT=Path('/mnt/data')
 ART={p.stem:'data:image/svg+xml;base64,'+base64.b64encode(p.read_bytes()).decode() for p in (ROOT/'assets/art').glob('*.svg')}
 html=(ROOT/'index.html').read_text();css=(ROOT/'src/styles.css').read_text()
 for k,v in ART.items(): html=html.replace('/assets/art/'+k+'.svg',v)
-filenames=['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']
+filenames=['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/vault.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']
 parts=[]
 for name in filenames:
     code=(ROOT/name).read_text()
@@ -30,7 +30,7 @@ with sync_playwright() as p:
         page.goto('about:blank')
         page.evaluate("""() => {const data=new Map();Object.defineProperty(window,'localStorage',{value:{getItem:(k)=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)},configurable:true});} """)
         page.set_content(html,wait_until='load',timeout=30000)
-        page.locator('#toInput').fill('Aarohi')
+        page.locator('#toInput').fill('Anaya')
         page.locator('#fromInput').fill('Manan')
         page.locator('[data-motion-preset="celebrate"]').click()
         assert page.locator('#wishCard').get_attribute('data-motion')=='celebrate'
@@ -40,7 +40,7 @@ with sync_playwright() as p:
         assert page.locator('.card-spark').count()>0
         # Motion + seal survive a share-link round trip.
         assert page.evaluate("""() => {const d=decodeWish(encodeWish(wish));return d.motion==='celebrate'&&d.seal==='heart'}""")
-        page.locator('#toInput').fill('Aarohi ✨')
+        page.locator('#toInput').fill('Anaya ✨')
         if width>=961:
             # 3 checkpoints: top, middle, last controls
             positions=[]
@@ -71,7 +71,7 @@ with sync_playwright() as p:
         else: page.locator('#openFocusPreview').click()
         assert page.locator('#focusPreview').is_visible()
         assert page.locator('#focusCardStage #wishCard').count()==1
-        assert page.locator('#cardRecipient').inner_text()=='Aarohi ✨'
+        assert page.locator('#cardRecipient').inner_text()=='Anaya ✨'
         if label=='desktop': page.locator('.focus-panel').screenshot(path=str(OUT/'wishverse_phase10_focus_preview.png'),animations='disabled')
         page.locator('#focusBurst').click()
         page.locator('#closeFocusPreview').click()

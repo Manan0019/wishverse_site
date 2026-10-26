@@ -12,7 +12,7 @@ for name,url in art.items():
     html = html.replace(f'/assets/art/{name}.svg',url)
 
 parts=[]
-for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
+for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/vault.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
     src=(ROOT/filename).read_text()
     src=re.sub(r'^import\s+.*?;\s*$', '', src, flags=re.M)
     src=re.sub(r'\bexport\s+(?=(const|function|async function|class|let)\b)', '', src)
@@ -61,20 +61,20 @@ with sync_playwright() as p:
         assert page.locator('#wishCard').get_attribute('data-layout')=='celestial'
         if label=='desktop':
             page.locator('#wishCard').screenshot(path=str(OUT/'wishverse_phase5_card_diwali_celestial.png'),animations='disabled')
-        page.locator('#toInput').fill('Aarohi 🌼')
+        page.locator('#toInput').fill('Anaya 🌼')
         page.locator('#fromInput').fill('Manan')
         page.locator('#memoryInput').fill('You make every celebration brighter.')
-        assert 'Aarohi' in page.locator('#cardRecipient').inner_text()
+        assert 'Anaya' in page.locator('#cardRecipient').inner_text()
         assert page.locator('#cardMemory').inner_text()=='You make every celebration brighter.'
 
         # saving, loading, and deleting drafts; restore template and personalized fields
-        page.locator('#draftName').fill('Diwali with Aarohi')
+        page.locator('#draftName').fill('Diwali with Anaya')
         page.locator('#saveDraft').click()
         assert page.locator('.draft-row').count()==1
         page.locator('[data-theme-pill="christmas"]').click()
         page.locator('#toInput').fill('Someone else')
         page.locator('.draft-row-actions button').first.click()
-        assert page.locator('#toInput').input_value()=='Aarohi 🌼'
+        assert page.locator('#toInput').input_value()=='Anaya 🌼'
         assert page.locator('#wishCard').get_attribute('data-layout')=='celestial'
         assert page.locator('#cardTitle').inner_text()=='Happy Diwali'
         page.locator('.draft-remove').click()

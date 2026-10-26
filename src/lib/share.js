@@ -4,8 +4,11 @@ import { safeLocale } from '../data/i18n.js';
 import { safeSoundscape } from './soundscapes.js';
 import { safeMotion, safeSeal } from './motion.js';
 import { safeStory } from './storybook.js';
+import { safeVault } from './vault.js';
 
-const MAX_LINK_LENGTH = 4200;
+// Accommodate long Hindi/Gujarati wishes with Storybook + Wish Vault.
+// Printable QR invitations still fall back to ordinary links when too dense.
+const MAX_LINK_LENGTH = 8192;
 const clip = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
 
 export function sanitizeWish(input = {}) {
@@ -30,7 +33,8 @@ export function sanitizeWish(input = {}) {
     soundscape: safeSoundscape(input.soundscape),
     motion: safeMotion(input.motion),
     seal: safeSeal(input.seal),
-    ...safeStory(input)
+    ...safeStory(input),
+    ...safeVault(input)
   };
 }
 

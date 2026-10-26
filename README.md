@@ -1,11 +1,41 @@
-# Wishverse — Phase 11 Complete Cumulative Source
+# Wishverse — Phase 12: Secret Wish Vault (complete cumulative source)
 
-**Contains everything from Phase 10 plus the Phase 11 Cinematic Storybook.** See `PHASE11_RELEASE_NOTES.md` and `DOWNLOAD_HELP.md`.
+**Built from the exact user-uploaded `wishverse_site.zip` (Phase 11).** Includes Phases 1–11 unchanged except necessary integration and correctness updates. Git metadata is deliberately omitted from the downloadable archive; no earlier phases are required.
 
-# Wishverse — Phase 9: Share Studio & QR Invitations
+## Phase 12 additions
 
-A responsive, static, no-account greeting platform for `greetings.mananbhayani.online`. **Not yet deployed**. This release builds on Phase 7 and keeps all prior functionality intact.
+- Changed the default demonstration recipient name everywhere from **Aarohi** to **Anaya**.
+- **Secret Wish Vault:** optional set of three interactive hidden gifts, revealed after the main card: admiration, memory, hope. A recipient can unwrap individually or open all three; focusable controls, reduced-motion handling and adaptive mobile layout.
+- **Wish Coach:** on-device writing suggestions based on personalized recipient/sender names, original message text and extra story or memory detail. This is a simple heuristic, **not AI**.
+- Per-occasion local starter notes with select Hindi/Gujarati content; the three gift notes can be freely rewritten.
+- Vault content is included in encoded greeting links, browser-local drafts, and self-contained Keepsake HTML; legacy cards with no vault data still work unchanged.
+- Share-link payload size limit raised for long Unicode greetings containing both Storybook and Vault. Printable QR remains size-limited and may require direct sharing instead.
+- Public offline service-worker cache updated to v12 so old cached main.js does not shadow this release; new `src/lib/vault.js` is included in the offline shell.
+- New Phase 12 unit/integration tests, plus all previous test suites.
 
+## Local usage
+
+```bash
+python -m http.server 5173
+```
+
+Open http://localhost:5173. Requires a modern desktop/mobile browser. No database.
+
+```bash
+npm test
+python scripts/phase12-browser-qa.py desktop
+python scripts/phase12-browser-qa.py mobile
+python scripts/phase12-browser-qa.py small
+npm run audit
+```
+
+## Deployment
+
+Prefer **Git-connected Cloudflare Pages** for repeat deployment. The separate direct-upload ZIP contains only public files. This source archive includes tests, code and documentation. The app is not automatically deployed and the greeting subdomain is not yet verified as live.
+
+## Privacy
+
+Link-embedded names, message, story and Vault notes are not secret or encrypted and can be read by anyone holding the full link. Photos/audio remain on the device and require sending the standalone Keepsake HTML (or PNG for photos) separately. There is no hosted database, mail service, analytics tracker or AdSense included.
 ## New in Phase 9
 
 - Premium Share Studio modal with native share (where supported), copy link, WhatsApp, Telegram and email.

@@ -34,7 +34,7 @@ assert.equal(sanitizeWish({finish:'oops'}).finish,'radiance');
 assert.equal(sanitizeWish({theme:'diwali', template:'birthday-2'}).template,'diwali-1');
 assert.equal(getTemplate('bad','rakhi').id,'rakhi-1');
 assert.equal(decodeWish('not~valid'),null);
-assert.equal(decodeWish('a'.repeat(4201)),null);
+assert.equal(decodeWish('a'.repeat(8193)),null);
 assert.equal(sanitizeWish({theme:'diwali',message:'text',to:'  '}).to,'Someone special');
 assert.ok(makeShareUrl(sample).startsWith('https://greetings.mananbhayani.online/#wish='));
 assert.ok(getWhatsAppUrl(sample).startsWith('https://wa.me/?text='));

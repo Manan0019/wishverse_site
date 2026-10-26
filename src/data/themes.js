@@ -149,7 +149,7 @@ export const DEFAULT_WISH = {
   theme: 'birthday',
   lang: 'en',
   template: 'birthday-1',
-  to: 'Aarohi',
+  to: 'Anaya',
   from: 'Manan',
   message: THEMES[0].messages.heartfelt,
   memory: 'Thank you for making life brighter just by being in it.',
@@ -165,7 +165,11 @@ export const DEFAULT_WISH = {
   storyEnabled: false,
   storySpark: '',
   storyMoment: '',
-  storyPromise: ''
+  storyPromise: '',
+  vaultEnabled: false,
+  vaultAdmire: '',
+  vaultMoment: '',
+  vaultHope: ''
 };
 
 export function getTheme(id) {
