@@ -425,3 +425,153 @@ body[data-lang="hi"] #cardMessage,body[data-lang="gu"] #cardMessage,body[data-la
 /* The share sheet scrolls internally on phones, without revealing or moving the editor behind it. */
 body.share-studio-open{overflow:hidden}
 @media(max-width:720px){.share-studio{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px}.share-studio-panel{margin:0 auto;min-height:0;max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}}
+
+/* ============================================================
+   PHASE 10 · MOTION STUDIO / STICKY PREVIEW & MOTION SYSTEM
+   ============================================================ */
+/* The previous overflow:hidden made the entire studio a clipping ancestor,
+   which prevented a true position:sticky preview from following the form. */
+.studio-band{overflow:clip}
+.studio-shell,.studio-layout{overflow:visible}
+@media(min-width:961px){
+  .studio-layout{align-items:start}
+  .preview-panel{position:sticky;top:86px;align-self:start;z-index:5;min-height:0;height:auto;max-height:calc(100dvh - 102px);display:flex;flex-direction:column;padding:17px 20px;overflow:visible;isolation:isolate}
+  .preview-outer{min-height:0!important;display:grid;place-items:center;flex:0 1 auto;padding:8px 0;overflow:visible}
+  .preview-panel .wish-card{max-width:min(100%,390px);margin-inline:auto}
+  .preview-panel .preview-heading{margin-bottom:10px}
+  .preview-panel .preview-meta-bar{margin-bottom:8px}
+  .preview-panel .preview-foot{margin-top:8px}
+  .preview-panel .preview-hint{margin-top:8px;margin-bottom:0}
+}
+.motion-lab{position:relative;overflow:hidden;padding:23px;border:1px solid #cba0db4b;border-radius:20px;background:radial-gradient(ellipse at 100% 0%,#8e5ac12a,transparent 55%),linear-gradient(135deg,#242039,#1a172b);margin:26px 0 8px}
+.motion-lab::before{content:'✦';position:absolute;right:22px;top:14px;color:#f7cbea44;font-size:40px;pointer-events:none;animation:motion-orbit 12s linear infinite}
+.motion-lab-heading h3{font:500 clamp(26px,3vw,34px)/1.1 var(--display);letter-spacing:-1.2px;margin:12px 0 7px}
+.motion-lab-heading h3 em{font:italic 1.07em var(--serif);color:#eec6e9}
+.motion-lab-heading p{font-size:12px;line-height:1.65;color:#b8aecb;margin:0 0 20px;max-width:44ch}
+.motion-lab .theme-fieldset{margin-bottom:20px}
+.motion-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.motion-preset{min-width:0;min-height:105px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;padding:13px 11px;border-radius:14px;background:#ffffff08;border:1px solid #ffffff23;color:#fff;text-align:left;cursor:pointer;transition:transform .2s ease,background .2s,border-color .2s,box-shadow .2s}
+.motion-preset:hover,.seal-preset:hover{transform:translateY(-3px);border-color:#eac7ee}
+.motion-preset.active,.seal-preset.active{background:#e6bce527;border-color:#f2ccec;box-shadow:inset 0 0 0 1px #e9c2e256,0 5px 22px #0003}
+.motion-preset-icon{font:28px var(--serif);color:#ffdbed;line-height:1}
+.motion-preset strong{font:700 12px var(--display)}
+.motion-preset small{font:400 10px/1.35 var(--display);color:#b8b0c8}
+.seal-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.seal-preset{min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;background:#ffffff09;border:1px solid #ffffff24;color:#fff;border-radius:14px;padding:11px 7px;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.seal-preset span{display:grid;place-items:center;background:linear-gradient(145deg,#f7dbac,#b88063);width:37px;height:37px;border-radius:50%;color:#422845;font-size:23px;box-shadow:0 4px 18px #0005}
+.seal-preset small{font:600 10px var(--display);color:#e7d4e7}
+.motion-lab-actions{display:flex;align-items:center;gap:15px;justify-content:space-between;flex-wrap:wrap}
+.motion-lab-actions span{font-size:10px;color:#a9a1b8}
+.motion-spark-button{color:#ffe4f5;background:linear-gradient(135deg,#7d477f,#55375f);border:1px solid #e9b6eb77;padding:12px 15px;border-radius:999px;font:700 11px var(--display);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.motion-spark-button:hover{transform:translateY(-2px);box-shadow:0 10px 22px #dc96e044}
+.motion-preview-tools{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;padding:9px 0}
+.motion-preview-tools button,.focus-bottom button{font:700 10px var(--display);border:1px solid #e8c4f05c;background:#d9acd91a;color:#f8d9f4;border-radius:999px;cursor:pointer;padding:8px 13px;transition:background .2s,transform .2s}
+.motion-preview-tools button:hover,.focus-bottom button:hover{background:#bb7cc24b;transform:translateY(-2px)}
+.motion-preview-tools span{font:700 8px var(--display);letter-spacing:1.4px;color:#b1a9c8}
+.wish-card,.opened-card{backface-visibility:hidden;will-change:auto}
+.wish-card .motion-shimmer{pointer-events:none;position:absolute;z-index:5;inset:0;background:radial-gradient(circle at var(--shine-x,35%) var(--shine-y,28%),rgba(255,255,255,.17),transparent 48%);mix-blend-mode:screen;opacity:0;transition:opacity .2s}
+.wish-card[data-motion="cinematic"] .motion-shimmer,.wish-card[data-motion="celebrate"] .motion-shimmer{opacity:1}
+.wish-card[data-motion="cinematic"] .wish-illustration,.opened-card[data-motion="cinematic"] .opened-illustration{animation:motion-art-drift 11s ease-in-out infinite alternate}
+.wish-card[data-motion="celebrate"] .wish-illustration,.opened-card[data-motion="celebrate"] .opened-illustration{animation:motion-art-drift 5.5s ease-in-out infinite alternate}
+.wish-card[data-motion="celebrate"] .wish-card-seal,.opened-card[data-motion="celebrate"] .opened-gift-seal{animation:motion-seal-pulse 2s ease-in-out infinite}
+.wish-card .card-confetti{position:absolute;inset:0;z-index:10;pointer-events:none;overflow:hidden}
+.card-spark{position:absolute;top:50%;left:50%;font-size:23px;color:#ffefc2;animation:motion-card-burst 1250ms ease-out var(--delay,0ms) both;text-shadow:0 0 12px #fff7}
+.wish-card.motion-glimmer::before{animation:motion-brighten 1s ease-out}
+.opened-gift-seal{position:relative;z-index:2;margin:6px auto 5px;display:grid;place-items:center;width:45px;height:45px;border-radius:50%;background:linear-gradient(145deg,#f8d8a9,#bd8e5f);color:#4f3140;font-size:26px;box-shadow:0 8px 28px #0004}
+.wish-card .wish-card-seal{display:inline-grid;place-items:center;min-width:35px;min-height:35px;border-radius:50%;background:linear-gradient(135deg,#ffe8ba,#be9375);color:#573850;box-shadow:0 5px 15px #0003}
+.wish-card[data-finish="heirloom"] .wish-card-seal{color:#603950}
+@keyframes motion-orbit{to{transform:rotate(360deg)}}
+@keyframes motion-art-drift{0%{translate:0 0;rotate:-1.3deg}100%{translate:0 -13px;rotate:1.3deg}}
+@keyframes motion-seal-pulse{0%,100%{box-shadow:0 5px 14px #0003}50%{box-shadow:0 2px 25px #f8d4a9aa}}
+@keyframes motion-card-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}13%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) rotate(250deg) scale(.9)}}
+@keyframes motion-brighten{50%{filter:brightness(1.45)}}
+@media(min-width:961px) and (hover:hover){.preview-panel .wish-card{transform:perspective(1100px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .25s ease-out,box-shadow .35s ease}.preview-panel .wish-card:hover{box-shadow:0 30px 80px #0009,0 0 45px #da7ed23b}}
+/* Modal uses the REAL card, moved temporarily, so there is no stale screenshot. */
+.focus-preview[hidden],.mobile-preview-dock[hidden]{display:none!important}
+.focus-preview{position:fixed;inset:0;z-index:1100;display:grid;place-items:center;padding:18px;overflow:auto}
+.focus-backdrop{position:fixed;inset:0;background:#060510ea;backdrop-filter:blur(18px)}
+.focus-panel{position:relative;z-index:1;width:min(880px,100%);max-height:calc(100dvh - 35px);overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 22px 20px;border:1px solid #e9bed044;border-radius:26px;background:radial-gradient(ellipse at 70% 10%,#a360a328,#151026 70%);box-shadow:0 32px 110px #000a}
+.focus-top{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}.focus-top h2{font:500 28px/1.15 var(--display);letter-spacing:-1.3px;margin:7px 0 0}
+.focus-close{white-space:nowrap;border:1px solid #fff4;color:#fff;background:#ffffff12;border-radius:999px;font:600 12px var(--display);padding:11px 16px;cursor:pointer}
+.focus-card-stage{min-height:0;width:100%;display:grid;place-items:center;padding:8px}
+.focus-card-stage .wish-card{margin:auto;zoom:1!important;max-width:390px;width:min(390px,100%)}
+.focus-bottom{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;font:700 10px var(--display);color:#c5b7d1;flex-wrap:wrap}
+body.focus-preview-open{overflow:hidden}
+/* Mobile/tablet editing: floating mini card is always visible at top/middle/bottom,
+   but hides when full preview is visible, and never intercepts text inputs. */
+.mobile-preview-dock{position:fixed;z-index:80;right:10px;left:10px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;max-width:425px;margin-inline:auto;padding:10px;border-radius:19px;border:1px solid #ecbdea88;background:#19152df2;box-shadow:0 14px 50px #000b,0 0 24px #b674d32e;backdrop-filter:blur(18px);animation:dockEnter .32s ease both}
+.dock-card-window{flex:none;position:relative;width:62px;height:91px;border-radius:7px;overflow:hidden;box-shadow:0 3px 16px #0009}
+.dock-card-miniature{position:absolute!important;left:0;top:0;width:348px!important;min-width:348px!important;height:510px!important;max-width:none!important;min-height:510px!important;zoom:1!important;transform:scale(.178)!important;transform-origin:top left!important;pointer-events:none!important;animation:none!important}
+.dock-card-miniature *{animation:none!important;transition:none!important}
+.dock-details{display:grid;gap:5px;flex:1;min-width:0}.dock-eyebrow{color:#dfabd8;font:700 9px var(--display);letter-spacing:1.6px}.dock-details strong{font:500 23px/1 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dock-details small{font:500 10px var(--display);color:#b8aeca;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock-expand{flex:none;display:flex;align-items:center;gap:5px;border:1px solid #dfb7e3;background:linear-gradient(135deg,#f0c5f2,#f3d5d3);border-radius:999px;color:#372342;font:700 11px var(--display);padding:11px 12px;cursor:pointer}
+@keyframes dockEnter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:961px){.mobile-preview-dock{display:none!important}}
+@media(max-width:960px){.motion-presets{gap:7px}.motion-preset{min-height:92px;padding:10px}.focus-panel{padding:14px}.focus-card-stage .wish-card{max-width:340px}}
+@media(max-width:570px){.motion-lab{padding:17px 13px}.motion-preset strong{font-size:11px}.motion-preset small{font-size:9px}.motion-preset-icon{font-size:23px}.seal-preset span{width:31px;height:31px;font-size:20px}.motion-preview-tools{gap:7px}.focus-top h2{font-size:22px}.focus-card-stage .wish-card{max-width:320px}.mobile-preview-dock{gap:9px}.dock-details strong{font-size:20px}}
+@media(max-width:360px){.motion-presets{grid-template-columns:repeat(3,minmax(0,1fr))}.motion-preset small{font-size:8px}.dock-card-window{width:50px;height:77px}.dock-card-miniature{transform:scale(.147)!important}.dock-expand{font-size:10px;padding:9px 10px}.mobile-preview-dock{padding:8px;gap:8px}.dock-details strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.motion-lab::before,.wish-card .wish-illustration,.opened-card .opened-illustration,.wish-card .wish-card-seal,.opened-card .opened-gift-seal,.card-spark,.mobile-preview-dock{animation:none!important}.wish-card{transform:none!important}.motion-preset,.seal-preset{transition:none!important}}
+/* Six tiny scene-specific floating glyphs, rendered below lettering. */
+.occasion-ambient{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.occasion-ambient span{position:absolute;display:block;left:var(--gx,15%);top:var(--gy,18%);font:28px/1 var(--serif);color:#fff7d8;opacity:.22;text-shadow:0 0 17px #fff9;animation:sceneGlyphFloat var(--dur,9s) ease-in-out infinite alternate;animation-delay:var(--offset,0s)}
+.occasion-ambient span:nth-child(1){--gx:8%;--gy:22%;--dur:7s;--offset:-2s}
+.occasion-ambient span:nth-child(2){--gx:78%;--gy:12%;--dur:9s;--offset:-4s}
+.occasion-ambient span:nth-child(3){--gx:88%;--gy:58%;--dur:6s;--offset:-3s}
+.occasion-ambient span:nth-child(4){--gx:11%;--gy:75%;--dur:10s;--offset:-1s}
+.occasion-ambient span:nth-child(5){--gx:67%;--gy:84%;--dur:8s;--offset:-5s}
+.occasion-ambient span:nth-child(6){--gx:37%;--gy:9%;--dur:11s;--offset:-6s}
+[data-motion="serene"] .occasion-ambient span{animation-duration:20s;opacity:.12}
+[data-motion="celebrate"] .occasion-ambient span{animation-duration:4.8s;opacity:.29}
+[data-scene="diwali"] .occasion-ambient span{color:#ffe5a2}
+[data-scene="anniversary"] .occasion-ambient span{color:#ffe2e9}
+[data-scene="newyear"] .occasion-ambient span{color:#d6d7ff}
+[data-scene="christmas"] .occasion-ambient span{color:#f4fff3}
+@keyframes sceneGlyphFloat{0%{transform:translate3d(-7px,9px,0) rotate(-18deg) scale(.9)}100%{transform:translate3d(9px,-18px,0) rotate(15deg) scale(1.15)}}
+/* Finishing accents — GPU-friendly transitions, mouse-only emphasis, no layout shift. */
+.occasion-tile{transform:translateZ(0);transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s,filter .45s}
+@media(hover:hover){.occasion-tile:hover{transform:translateY(-9px) scale(1.015);filter:saturate(1.11);box-shadow:0 35px 75px #0008}}
+.occasion-tile .tile-illustration{transition:transform .8s cubic-bezier(.18,.82,.22,1),filter .55s}
+@media(hover:hover){.occasion-tile:hover .tile-illustration{transform:translateY(-7px) scale(1.06) rotate(2deg);filter:drop-shadow(0 12px 25px #0004)}}
+.template-card,.template-tile{transition:transform .4s ease,box-shadow .4s ease,border-color .3s ease}
+@media(hover:hover){.template-card:hover,.template-tile:hover{transform:translateY(-5px);box-shadow:0 18px 34px #0004}}
+.studio-heading em,.section h2 em{background:linear-gradient(110deg,#eac0ec,#fff0cf 55%,#eac0ec);background-size:210% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:motion-headline-shine 13s ease-in-out infinite alternate}
+@keyframes motion-headline-shine{to{background-position:100% 0}}
+.button-primary{background-size:190% 190%;animation:motion-cta-glow 9s ease-in-out infinite alternate}
+@keyframes motion-cta-glow{to{background-position:100% 80%}}
+.field:focus-within>span,.field:focus-within .field-label-row{color:#ffe3fc;transition:color .25s}
+.field input:focus,.field textarea:focus,.field select:focus{box-shadow:0 0 0 3px #b674c724,0 0 25px #b88bd61b}
+.recipient-opened.is-visible .opened-card{animation:motion-recipient-arrive 900ms cubic-bezier(.18,.82,.23,1) both}
+@keyframes motion-recipient-arrive{0%{opacity:0;filter:blur(7px);transform:translateY(28px) scale(.94)}100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.occasion-ambient span,.studio-heading em,.section h2 em,.button-primary,.recipient-opened.is-visible .opened-card{animation:none!important}.occasion-tile:hover,.template-card:hover,.template-tile:hover{transform:none!important}}
+/* Final card integrity rule: never sacrifice the sender signature to a fixed
+   aspect-ratio box. Taller localized/longer cards grow naturally. */
+.wish-card:not(.dock-card-miniature){aspect-ratio:auto;min-height:600px;height:auto}
+.wish-card:not(.dock-card-miniature) .wish-card-main{flex:1 0 auto;min-height:0}
+.wish-card:not(.dock-card-miniature) .wish-card-bottom{flex:none;position:relative;z-index:7;margin-top:16px;padding-bottom:5px;overflow:visible}
+.wish-card:not(.dock-card-miniature) .wish-card-bottom strong{line-height:1.2;overflow-wrap:anywhere}
+@media(max-width:570px){.wish-card:not(.dock-card-miniature){min-height:590px}}
+@media(min-width:961px){
+  .preview-panel .preview-outer{flex:0 0 auto;min-height:0!important;height:auto}
+}
+/* Focus mode at 320px / short screens: scroll the stage rather than compressing
+   the card on top of the Close / Celebrate controls. */
+.focus-card-stage{flex:0 0 auto;min-height:max-content}
+.focus-card-stage .wish-card{flex-shrink:0}
+.focus-top,.focus-bottom{flex:0 0 auto}
+.focus-panel{overscroll-behavior:contain}
+@media(max-width:570px){.focus-panel{max-height:calc(100dvh - 22px)}.focus-card-stage{padding:4px 0 10px}}
+.wish-card.card-visual-swap{animation:motion-style-swap 620ms cubic-bezier(.2,.8,.3,1)}
+@keyframes motion-style-swap{0%{filter:saturate(.6) brightness(.9);opacity:.76}45%{filter:saturate(1.27) brightness(1.12);opacity:1}100%{filter:saturate(1) brightness(1)}}
+@media(prefers-reduced-motion:reduce){.wish-card.card-visual-swap{animation:none!important}}
+
+/* ================= Phase 11 · Cinematic Storybook ================= */
+.storybook-studio{position:relative;isolation:isolate;margin:27px 0 35px;padding:26px;border:1px solid rgba(236,184,232,.28);border-radius:25px;background:radial-gradient(ellipse at 95% 5%,rgba(229,147,224,.17),transparent 46%),linear-gradient(160deg,rgba(85,48,111,.38),rgba(25,21,55,.85));box-shadow:0 18px 50px rgba(0,0,0,.11);color:#f7f0fc}
+.storybook-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.storybook-header h3{font:500 clamp(25px,3vw,33px)/1.12 var(--display);letter-spacing:-1px;margin:9px 0 10px}.storybook-header h3 em{font:italic 1.14em var(--serif);color:#f4bce1}.storybook-header p{color:#cac0d9;font-size:12px;line-height:1.8;max-width:450px;margin:0}.storybook-emblem{display:grid;place-items:center;font:400 60px var(--serif);color:#ffdfbe;filter:drop-shadow(0 0 18px rgba(242,171,244,.6));animation:storyFloat 8s ease-in-out infinite}
+.storybook-switch{cursor:pointer;display:flex;gap:10px;align-items:center;justify-content:space-between;margin:24px 0 0;padding:16px;border:1px solid rgba(255,255,255,.16);border-radius:17px;background:rgba(255,255,255,.045)}.story-switch-copy{display:grid;gap:4px}.story-switch-copy strong{font:600 14px var(--display)}.story-switch-copy small{font:400 11px/1.6 var(--display);color:#c1b8d5}.storybook-switch input{width:20px;height:20px;accent-color:#efb7e7;flex:none}.storybook-switch-track{display:none}
+.story-fields{padding-top:22px;display:grid;gap:14px}.story-fields[hidden]{display:none!important}.story-progress-guide{display:flex;justify-content:space-between;gap:6px;font:700 9px var(--display);letter-spacing:1px;color:#f4c6e0;padding-bottom:4px}.story-input{display:grid;gap:8px}.story-input>span{font:700 10px var(--display);letter-spacing:1.5px;color:#f5d9ee}.story-input small{display:block;color:#bdafcf;font:400 11px var(--display);letter-spacing:0;margin-top:5px}.story-input textarea{box-sizing:border-box;width:100%;resize:vertical;min-height:72px;padding:15px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(6,9,30,.35);color:white;font:400 13px/1.6 var(--display);outline-offset:3px}.story-input textarea:focus-visible{outline:2px solid #edb2e3;border-color:#edb2e3}.story-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.story-inspire{cursor:pointer;border:1px solid rgba(255,255,255,.22);padding:11px 15px;border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:600 11px var(--display)}.story-inspire:hover{background:rgba(255,255,255,.18)}.story-bottom>span{color:#c6c0d7;font-size:11px}
+.recipient-story{width:100%;max-width:780px;padding:20px 14px 36px;margin:0 auto}.story-scene{position:relative;overflow:hidden;min-height:500px;padding:28px 38px 24px;background:radial-gradient(circle at 70% 5%,color-mix(in srgb,var(--t2) 45%,transparent),transparent 55%),linear-gradient(145deg,rgba(47,28,78,.94),rgba(13,12,38,.96));border:1px solid rgba(255,255,255,.19);border-radius:30px;box-shadow:0 25px 90px #0006;display:flex;flex-direction:column;align-items:stretch;color:#fff}.story-scene:before{content:'';position:absolute;inset:16px;border:1px solid rgba(255,255,255,.11);border-radius:22px;pointer-events:none}.story-scene-top,.story-scene-track,.story-scene-actions{position:relative;z-index:2}.story-scene-top{display:flex;justify-content:space-between;gap:10px;font:700 10px var(--display);letter-spacing:1.6px;color:#eee0ef}.story-scene-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 20px}.story-scene-art{font:400 76px var(--serif);line-height:1;color:#ffe1a9;text-shadow:0 0 30px #e3b5f488;margin-bottom:10px;animation:storyFloat 7s ease-in-out infinite}.story-scene-kicker{color:#f1d4ed;font:700 10px var(--display);letter-spacing:3px;margin:10px 0 16px}.story-scene-inner h2{font:italic clamp(37px,5.6vw,65px)/1.12 var(--serif);max-width:600px;margin:0 0 22px;color:#fff8f2;text-wrap:balance}.story-scene-message{font:400 clamp(16px,2vw,21px)/1.65 var(--display);white-space:pre-wrap;overflow-wrap:anywhere;max-width:520px;margin:0 0 22px;color:#fff3e9}.story-scene-signature{font:italic 20px var(--serif);color:#efdbed}.story-scene-signature strong{color:#fff;font-weight:400}.story-scene-track{display:flex;gap:9px;justify-content:center;margin:16px 0 20px}.story-scene-track>span{height:5px;width:50px;max-width:25%;border-radius:99px;background:rgba(255,255,255,.2);transition:background .3s ease,box-shadow .3s ease}.story-scene-track>span.active{background:#f4c8df;box-shadow:0 0 12px #e8b8d088}.story-scene-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.story-scene-back{border:1px solid rgba(255,255,255,.3);background:transparent;border-radius:50px;color:#fff;padding:12px 18px;font:600 12px var(--display);cursor:pointer}.story-scene-back:disabled{visibility:hidden}.story-scene-skip{align-self:center;position:relative;z-index:1;margin-top:18px;border:0;background:transparent;color:#cbbad5;text-decoration:underline;cursor:pointer;font:500 11px var(--display)}.story-arriving{animation:storyArrive .46s ease both}
+@keyframes storyFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes storyArrive{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:700px){.storybook-studio{padding:19px;border-radius:20px}.story-scene{padding:22px 20px;min-height:460px}.story-scene-inner{padding:25px 7px}.story-scene-top{font-size:8px;letter-spacing:1px}.story-scene-art{font-size:58px}.story-scene-inner h2{font-size:44px}.story-scene-message{font-size:16px}.story-scene-actions .button{white-space:normal;font-size:11px;padding:10px 14px}.story-scene-back{font-size:11px;padding:10px 13px}}
+@media(max-width:380px){.story-scene{padding:16px 15px;min-height:440px}.story-scene-inner h2{font-size:38px}.story-scene-inner{padding:20px 0}.storybook-emblem{font-size:40px}.story-scene-top span:first-child{max-width:155px}}
+@media(prefers-reduced-motion:reduce){.story-scene-art,.storybook-emblem,.story-arriving{animation:none!important}.story-scene-track>span{transition:none}}

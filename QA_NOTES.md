@@ -1,3 +1,13 @@
+# Phase 11 Verification
+
+- Complete cumulative copy from Phase 10, verified.
+- New Storybook unit tests: PASS.
+- Desktop, 390px and 320px in-memory browser tests: PASS.
+- Sticky preview regression preserved from Phase 10.
+- Offline keepsake Storybook content and escaping: PASS.
+- Static release audit: 0 errors and 0 warnings.
+- Real public-domain deployment and native-device QA remain pending.
+
 # Phase 8 QA — Release Candidate
 
 Date: 25 October 2026
@@ -36,3 +46,24 @@ Date: 25 October 2026
 - Downloaded 1600×2000 invitation was decoded with pyzbar successfully, producing the full personalized link.
 - Playwright isolated UI checks at 1440px, 390px and 320px exercised QR canvas creation, poster download, native-share fallback, ESC close, and recipient reaction selection.
 - Launch still requires live domain/DNS verification and a real-mobile HTTPS share test.
+
+## Phase 10 — Motion Studio QA (26 October 2026)
+
+### Verified source and browser checks
+
+- `npm test`: PASS for previous phases and Phase 10 motion/seal/Unicode/backward-link tests.
+- `npm run audit`: PASS — 24 HTML pages, 18 multilingual guides, 494 internal references, 22 sitemap entries, zero release-audit errors/warnings.
+- Isolated Chromium Playwright scroll checks: 1440×900 sticky preview stays fully visible at name, message, bottom download button; `previewPanel` top about 86px at each checkpoint.
+- Mobile 390×844 and narrow mobile 320×720: live dock visible at top, middle and lower controls, and hidden when preview is in view.
+- Focus preview moves and restores the same card; recipient ritual/reveal and signature seal checked at each size.
+- PNG export performed with Love seal and kept the expected filename / dimensions.
+- Long custom messages plus long names tested at 1024×700, 1280×690, 1440×650: resized sticky card did not overlap action controls, with no horizontal overflow.
+- CSS layout fixes: footer/signature and action buttons no longer crop/overlap; 320px focus modal scrolls instead of compressing its footer controls.
+
+### Limitations / operator gates
+
+- Real Safari/iOS, real Android devices, and microphone permission still require manual validation.
+- The static domain is not yet connected, so end-user live sharing and QR scanning require deployment.
+- Video-like recordings or hosted shared voice/photo content have not been added. The Phase 6 memory attachment approach is unchanged.
+- Effects honor `prefers-reduced-motion`, but real-device performance should be monitored on lower-end phones.
+- Content, privacy, support contact, and AdSense review are still needed before production.

@@ -61,3 +61,8 @@ Official Cloudflare references:
 ## Phase 9 — printable QR invitations
 
 A downloaded QR invitation encodes `https://greetings.mananbhayani.online/#wish=...` and will not resolve until the website is actually deployed at that address. Use the production domain before printing real invitations. No QR generation service or new backend is necessary. Native sharing is limited by browser support and generally requires HTTPS; fallback share targets remain available.
+
+
+## Phase 10
+
+The Pages static output includes `/src/lib/motion.js` and uses service worker cache version 10. Rebuild using `npm run audit` and deploy `dist/`. Validate desktop preview tracking and mobile live dock on the deployed HTTPS site, and clear stale SW caches if any users still see older assets.

@@ -2,6 +2,8 @@ import { DEFAULT_WISH, THEMES, TONES, FINISHES, RELATIONS } from '../data/themes
 import { getTemplate } from '../data/templates.js';
 import { safeLocale } from '../data/i18n.js';
 import { safeSoundscape } from './soundscapes.js';
+import { safeMotion, safeSeal } from './motion.js';
+import { safeStory } from './storybook.js';
 
 const MAX_LINK_LENGTH = 4200;
 const clip = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
@@ -25,7 +27,10 @@ export function sanitizeWish(input = {}) {
     secret: Boolean(input.secret),
     hideMemory: input.hideMemory === undefined ? false : Boolean(input.hideMemory),
     particles: Boolean(input.particles),
-    soundscape: safeSoundscape(input.soundscape)
+    soundscape: safeSoundscape(input.soundscape),
+    motion: safeMotion(input.motion),
+    seal: safeSeal(input.seal),
+    ...safeStory(input)
   };
 }
 

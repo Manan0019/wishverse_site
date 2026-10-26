@@ -7,6 +7,8 @@ import { photoFileToDataUrl, blobToDataUrl, downloadKeepsake, MAX_AUDIO_BYTES } 
 import { SOUNDSCAPES, playSoundscape, safeSoundscape } from './lib/soundscapes.js';
 import { tr, safeLocale, occasionLabel, greetingFor, suggestedMessageFor, isSuggestedMessage } from './data/i18n.js';
 import {getShareText,shareLinks,makeQRCanvas,downloadSharePoster} from './lib/share-studio.js';
+import {MOTION_PRESETS, GIFT_SEALS, sealSymbol} from './lib/motion.js';
+import { buildStory, storySuggestions } from './lib/storybook.js';
 
 const $ = (id) => document.getElementById(id);
 const icon = (name) => `<svg class="ico"><use href="#i-${name}"/></svg>`;
@@ -25,6 +27,13 @@ let recordingStartedAt = 0;
 let mediaGeneration = 0;
 let previousShareFocus = null;
 let selectedReaction = null;
+let focusedCardParent = null;
+let focusPrevious = null;
+let dockFramePending = false;
+let burstTimer = null;
+let lastVisualSignature = "";
+let visualSwapTimer = null;
+let storyPage = 0;
 
 
 function applyTheme(element, theme) {
@@ -304,6 +313,10 @@ function updatePreview() {
   $('cardMemory').textContent = normalized.memory || theme.headline;
   $('cardIllustration').src = getArtUrl(theme.id);
   $('wishCard').dataset.finish = normalized.finish;
+  $('wishCard').dataset.motion = normalized.motion;
+  $('cardGiftSeal').textContent = sealSymbol(normalized.seal);
+  $('wishCard').querySelectorAll('[data-scene-glyph]').forEach((el,i)=>{el.textContent=theme.motifs[i%theme.motifs.length];});
+  $('previewOuter').dataset.motion = normalized.motion;
   $('wishCard').classList.toggle('name-long', normalized.to.length > 17);
   $('wishCard').classList.toggle('long-copy', normalized.message.length > 170 || (normalized.memory.length > 68 && normalized.message.length > 120));
   $('previewTheme').textContent = occasionLabel(theme.id, normalized.lang).toUpperCase();
@@ -318,12 +331,23 @@ function updatePreview() {
   $('motifTwo').textContent = theme.motifs[1];
   $('motifThree').textContent = theme.motifs[2];
   syncSoundscapeOptions();
+  syncStoryEditor(normalized);
 
   applyTheme($('wishCard'), theme);
   applyTheme($('previewOuter'), theme);
   applyTheme($('recipientScene'), theme);
   applyTemplateStyle($('wishCard'), preset);
   applyTemplateStyle($('previewOuter'), preset);
+  const visualSignature = `${normalized.theme}:${normalized.template}:${normalized.finish}:${normalized.motion}:${normalized.seal}`;
+  if (lastVisualSignature && visualSignature !== lastVisualSignature) {
+    const card = $('wishCard');
+    card.classList.remove('card-visual-swap');
+    void card.offsetWidth;
+    card.classList.add('card-visual-swap');
+    clearTimeout(visualSwapTimer);
+    visualSwapTimer = setTimeout(() => card.classList.remove('card-visual-swap'), 680);
+  }
+  lastVisualSignature = visualSignature;
   syncTemplateGallery();
   document.querySelectorAll('[data-finish]').forEach((element) => {
     const selected = element.dataset.finish === normalized.finish;
@@ -341,6 +365,9 @@ function updatePreview() {
     element.setAttribute('aria-pressed', String(selected));
   });
   updateSharingReview();
+  syncMotionControls();
+  syncMiniPreview();
+  queueCardFit();
 }
 
 function updateInputs() {
@@ -355,6 +382,9 @@ function updateInputs() {
   $('secretToggle').checked = wish.secret;
   $('particlesToggle').checked = wish.particles;
   $('hideMemoryToggle').checked = wish.hideMemory;
+  $('storyEnabled').checked = Boolean(wish.storyEnabled);
+  for (const key of ['storySpark','storyMoment','storyPromise']) $(key).value = wish[key] || '';
+  syncMotionControls();
   syncSoundscapeOptions();
   buildTemplateGallery();
   updatePreview();
@@ -599,7 +629,44 @@ function beginRecipientMoment() {
   $('ritualAction').focus({ preventScroll: true });
 }
 
+function renderStoryPage() {
+  if (!openedWish) return;
+  const pages = buildStory(openedWish);
+  const chapter = pages[storyPage];
+  $('storyStepText').textContent = `CHAPTER ${storyPage + 1} OF ${pages.length}`;
+  $('storySceneKicker').textContent = chapter.label;
+  $('storySceneTitle').textContent = chapter.title;
+  $('storySceneIcon').textContent = chapter.icon;
+  $('storySceneMessage').textContent = chapter.text;
+  $('storySceneFrom').textContent = openedWish.from;
+  $('storyPrevious').disabled = storyPage === 0;
+  $('storyNext').firstChild.textContent = storyPage === pages.length - 1 ? 'Open the final card ' : 'Next chapter ';
+  [...$('storySceneTrack').children].forEach((element, i) => element.classList.toggle('active', i <= storyPage));
+  const inside = $('storySceneInner');
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    inside.classList.remove('story-arriving');
+    void inside.offsetWidth;
+    inside.classList.add('story-arriving');
+  }
+}
+
+function startStory() {
+  storyPage = 0;
+  $('recipientClosed').hidden = true;
+  $('recipientRitual').hidden = true;
+  $('recipientOpened').hidden = true;
+  $('recipientStory').hidden = false;
+  renderStoryPage();
+  $('storyNext').focus({ preventScroll: true });
+}
+
 function revealCard() {
+  if (openedWish?.storyEnabled) { startStory(); return; }
+  completeCardReveal();
+}
+
+function completeCardReveal() {
+  $('recipientStory').hidden = true;
   $('recipientClosed').hidden = true;
   $('recipientRitual').hidden = true;
   $('recipientOpened').hidden = false;
@@ -679,6 +746,9 @@ function setRecipientContent(input) {
   $('openedMotif').textContent = theme.motifs[0];
   $('openedIllustration').src = getArtUrl(theme.id);
   $('openedCard').dataset.finish = sanitized.finish;
+  $('openedCard').dataset.motion = sanitized.motion;
+  $('openedGiftSeal').textContent = sealSymbol(sanitized.seal);
+  $('openedCard').querySelectorAll('[data-scene-glyph]').forEach((el,i)=>{el.textContent=theme.motifs[i%theme.motifs.length];});
   $('openedCard').classList.toggle('name-long', sanitized.to.length > 17);
   $('openedCard').classList.toggle('long-copy', sanitized.message.length > 170);
   $('memoryReveal').classList.toggle('is-sealed', Boolean(sanitized.hideMemory && sanitized.memory));
@@ -691,14 +761,16 @@ function setRecipientContent(input) {
   $('makeOneBack').firstChild.textContent = tr(sanitized.lang,'returnWish') + ' ';
   $('recipientClosed').hidden = !sanitized.secret;
   $('recipientRitual').hidden = true;
-  $('recipientOpened').hidden = Boolean(sanitized.secret);
+  $('recipientOpened').hidden = Boolean(sanitized.secret || sanitized.storyEnabled);
+  $('recipientStory').hidden = true;
   $('recipientView').hidden = false;
   if(input === wish) setPhotoUI();
   else { $('recipientMemoryTheatre').hidden=true; $('recipientMemoryPhoto').hidden=true; $('recipientMemoryVoice').hidden=true; $('recipientMemoryVoice').pause(); }
   document.body.classList.add('viewer-active');
-  if (!sanitized.secret && sanitized.particles) setTimeout(() => burstStars(36), 250);
+  if (!sanitized.secret && sanitized.storyEnabled) startStory();
+  else if (!sanitized.secret && sanitized.particles) setTimeout(() => burstStars(36), 250);
   if (sanitized.secret) $('unwrapAction').focus({ preventScroll: true });
-  else $('moreSparkles').focus({ preventScroll: true });
+  else if (!sanitized.storyEnabled) $('moreSparkles').focus({ preventScroll: true });
 }
 
 function openReceiver(input) { setRecipientContent(input); }
@@ -709,6 +781,8 @@ function closeReceiver({ reply = false } = {}) {
   document.body.classList.remove('viewer-active');
   $('confettiLayer').replaceChildren();
   $('recipientRitual').hidden = true;
+  $('recipientStory').hidden = true;
+  storyPage = 0;
   ritualState = { theme: '', progress: 0, goal: 1, mode: 'action', complete: false };
   ritualSession += 1;
   if (getSharedWish()) window.history.replaceState({}, '', window.location.pathname);
@@ -771,6 +845,9 @@ function setPhotoUI() {
     ['voicePreview','recipientMemoryVoice'].forEach(id=>{ $(id).pause(); $(id).removeAttribute('src'); $(id).load(); });
   }
   updateSharingReview();
+  syncMotionControls();
+  syncMiniPreview();
+  queueCardFit();
 }
 
 function resetMedia() {
@@ -860,7 +937,233 @@ function warnIfMediaOnLink() {
   if(media.photo||media.voice) showToast('Link sent with text and design only. For photo/voice, download and send your Keepsake HTML file.');
 }
 
+
+/* Phase 10 / Motion Studio: a single real card that follows the editor, a
+   lightweight mobile live thumbnail, and a true full-screen focus mode. */
+function createMotionOptions() {
+  $('motionPresets').innerHTML = MOTION_PRESETS.map(x => `<button type="button" class="motion-preset" data-motion-preset="${x.id}" aria-pressed="false"><span class="motion-preset-icon">${x.icon}</span><strong>${x.label}</strong><small>${x.detail}</small></button>`).join('');
+  $('sealPresets').innerHTML = GIFT_SEALS.map(x => `<button type="button" class="seal-preset" data-seal-preset="${x.id}" aria-pressed="false"><span>${x.icon}</span><small>${x.label}</small></button>`).join('');
+}
+function syncMotionControls() {
+  document.querySelectorAll('[data-motion-preset]').forEach(b => {
+    const active = b.dataset.motionPreset === (wish.motion || 'cinematic');
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  });
+  document.querySelectorAll('[data-seal-preset]').forEach(b => {
+    const active = b.dataset.sealPreset === (wish.seal || 'star');
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  });
+}
+function syncMiniPreview() {
+  if (!$('dockCardWindow')) return;
+  const card = $('wishCard');
+  // The full-size card is the single source of truth. The thumbnail is inert,
+  // contains no duplicate IDs, and requires no second content-rendering engine.
+  const miniature = card.cloneNode(true);
+  miniature.removeAttribute('id');
+  miniature.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  miniature.setAttribute('aria-hidden', 'true');
+  miniature.removeAttribute('tabindex');
+  miniature.style.removeProperty('zoom');
+  miniature.style.transform = '';
+  miniature.classList.add('dock-card-miniature');
+  $('dockCardWindow').replaceChildren(miniature);
+  const normalized = sanitizeWish(wish);
+  $('dockRecipient').textContent = normalized.to;
+  $('dockTemplate').textContent = `${getTheme(normalized.theme).name} · ${getTemplate(normalized.template, normalized.theme).name}`;
+  scheduleDockVisibility();
+}
+function fitStickyCard() {
+  const card = $('wishCard'), panel = $('previewPanel');
+  if (!card || !panel || !$('focusPreview').hidden || window.innerWidth < 961) return;
+  // Reserve the REAL header, chips, action row and footer heights, rather
+  // than guessing; a taller card must not overlap Focus / Magic controls.
+  card.style.zoom = '1';
+  const outer = $('previewOuter');
+  const natural = card.getBoundingClientRect().height;
+  const otherHeight = Math.max(0, panel.scrollHeight - outer.getBoundingClientRect().height);
+  const maxPanelHeight = Math.max(420, window.innerHeight - 102);
+  const available = Math.max(300, maxPanelHeight - otherHeight - 28);
+  card.style.zoom = String(Math.min(1, available / natural));
+}
+function queueCardFit() {
+  requestAnimationFrame(fitStickyCard);
+}
+function scheduleDockVisibility() {
+  if (dockFramePending) return;
+  dockFramePending = true;
+  requestAnimationFrame(() => {
+    dockFramePending = false;
+    const dock = $('mobilePreviewDock');
+    if (!dock) return;
+    const studio = $('studio').getBoundingClientRect();
+    const actualPreview = $('previewPanel').getBoundingClientRect();
+    const isSmall = window.innerWidth < 961;
+    const withinStudio = studio.top < window.innerHeight - 20 && studio.bottom > 100;
+    const actualVisible = actualPreview.top < window.innerHeight - 150 && actualPreview.bottom > 100;
+    const overlay = !$('focusPreview').hidden || !$('recipientView').hidden || !$('shareStudio').hidden;
+    dock.hidden = !(isSmall && withinStudio && !actualVisible && !overlay);
+  });
+}
+function openFocusMode() {
+  const focus = $('focusPreview');
+  if (!focus.hidden) return;
+  focusPrevious = document.activeElement;
+  const card = $('wishCard');
+  focusedCardParent = card.parentNode;
+  card.style.zoom = '1';
+  $('focusCardStage').appendChild(card);
+  focus.hidden = false;
+  document.body.classList.add('focus-preview-open');
+  scheduleDockVisibility();
+  $('closeFocusPreview').focus({preventScroll:true});
+}
+function closeFocusMode() {
+  const focus = $('focusPreview');
+  if (focus.hidden) return;
+  const card = $('wishCard');
+  focusedCardParent?.appendChild(card);
+  focus.hidden = true;
+  document.body.classList.remove('focus-preview-open');
+  card.style.removeProperty('zoom');
+  fitStickyCard();
+  scheduleDockVisibility();
+  if (focusPrevious?.isConnected) focusPrevious.focus({preventScroll:true});
+}
+function sparkleCard() {
+  const card = $('wishCard');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (wish.motion === 'serene') {
+    card.classList.remove('motion-glimmer');
+    void card.offsetWidth;
+    card.classList.add('motion-glimmer');
+    clearTimeout(burstTimer);
+    burstTimer = setTimeout(() => card.classList.remove('motion-glimmer'), 1100);
+    return;
+  }
+  const layer = card.querySelector('.card-confetti');
+  if (!layer) return;
+  layer.replaceChildren();
+  const amount = wish.motion === 'celebrate' ? 24 : 12;
+  for (let i=0;i<amount;i++) {
+    const dot=document.createElement('span');
+    dot.className='card-spark';
+    dot.textContent=['✦','✧','✳','♡'][i%4];
+    const ang=i*(Math.PI*2/amount);
+    const dist=85+(i%4)*23;
+    dot.style.setProperty('--sx', `${Math.cos(ang)*dist}px`);
+    dot.style.setProperty('--sy', `${Math.sin(ang)*dist}px`);
+    dot.style.setProperty('--delay', `${i%5*35}ms`);
+    layer.appendChild(dot);
+  }
+  setTimeout(() => layer.replaceChildren(), 1600);
+}
+function bindMotionExperience() {
+  $('motionPresets').addEventListener('click', e => {
+    const button=e.target.closest('[data-motion-preset]');
+    if (!button) return;
+    wish.motion = button.dataset.motionPreset;
+    updatePreview();
+    sparkleCard();
+  });
+  $('sealPresets').addEventListener('click', e => {
+    const button=e.target.closest('[data-seal-preset]');
+    if (!button) return;
+    wish.seal=button.dataset.sealPreset;
+    updatePreview();
+  });
+  $('previewSparkles').addEventListener('click', sparkleCard);
+  $('cardMagicBurst').addEventListener('click', sparkleCard);
+  $('focusBurst').addEventListener('click', sparkleCard);
+  $('openFocusPreview').addEventListener('click', openFocusMode);
+  $('dockOpen').addEventListener('click', openFocusMode);
+  $('closeFocusPreview').addEventListener('click', closeFocusMode);
+  $('focusBackdrop').addEventListener('click', closeFocusMode);
+  $('focusPreview').addEventListener('keydown', e => {
+    if (e.key === 'Escape') {e.preventDefault();closeFocusMode();}
+    if (e.key !== 'Tab') return;
+    const controls=Array.from($('focusPreview').querySelectorAll('button:not([disabled])'));
+    if (e.shiftKey && document.activeElement===controls[0]) {e.preventDefault();controls[controls.length-1].focus();}
+    else if (!e.shiftKey && document.activeElement===controls[controls.length-1]) {e.preventDefault();controls[0].focus();}
+  });
+  const card=$('wishCard');
+  card.addEventListener('pointermove', e => {
+    if (e.pointerType==='touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches || wish.motion==='serene') return;
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    card.style.setProperty('--tilt-y', `${(x*7).toFixed(2)}deg`);
+    card.style.setProperty('--tilt-x', `${(-y*7).toFixed(2)}deg`);
+    card.style.setProperty('--shine-x', `${(x+.5)*100}%`);
+    card.style.setProperty('--shine-y', `${(y+.5)*100}%`);
+  });
+  card.addEventListener('pointerleave', () => {card.style.setProperty('--tilt-y','0deg');card.style.setProperty('--tilt-x','0deg');});
+  const showcase = $('heroShowcase');
+  if (showcase) {
+    showcase.addEventListener('pointermove', e=>{
+      if (e.pointerType==='touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const box=showcase.getBoundingClientRect();
+      showcase.style.setProperty('--pointer-x', `${((e.clientX-box.left)/box.width-.5)*15}px`);
+      showcase.style.setProperty('--pointer-y', `${((e.clientY-box.top)/box.height-.5)*12}px`);
+    });
+    showcase.addEventListener('pointerleave', ()=>{
+      showcase.style.setProperty('--pointer-x','0px');showcase.style.setProperty('--pointer-y','0px');
+    });
+  }
+  window.addEventListener('scroll', scheduleDockVisibility, {passive:true});
+  window.addEventListener('resize', () => {scheduleDockVisibility();queueCardFit();}, {passive:true});
+}
+function initMotionExperience() {
+  createMotionOptions();
+  syncMotionControls();
+  syncMiniPreview();
+  queueCardFit();
+  scheduleDockVisibility();
+}
+
+function syncStoryEditor(normalized = sanitizeWish(wish)) {
+  $('storyFields').hidden = !normalized.storyEnabled;
+  $('storyEnabled').checked = Boolean(normalized.storyEnabled);
+  const filled = ['storySpark','storyMoment','storyPromise'].filter(key => normalized[key]).length;
+  $('storyCounter').textContent = normalized.storyEnabled ? `${filled} of 3 personal chapters written` : 'Story mode off';
+}
+
+function bindStoryEditor() {
+  $('storyEnabled').addEventListener('change', event => {
+    wish.storyEnabled = event.target.checked;
+    syncStoryEditor();
+  });
+  for (const key of ['storySpark','storyMoment','storyPromise']) {
+    $(key).addEventListener('input', event => {
+      wish[key] = event.target.value;
+      syncStoryEditor();
+    });
+  }
+  $('storyInspire').addEventListener('click', () => {
+    const prompts = storySuggestions(wish.theme);
+    ['storySpark','storyMoment','storyPromise'].forEach((key,i)=>{
+      if (!String(wish[key] || '').trim()) {
+        wish[key]=prompts[i];
+        $(key).value=prompts[i];
+      }
+    });
+    syncStoryEditor();
+    showToast('Story starters added. Make each chapter your own ✦');
+  });
+  $('storyPrevious').addEventListener('click', () => {
+    if (storyPage > 0) {storyPage -= 1; renderStoryPage();}
+  });
+  $('storyNext').addEventListener('click', () => {
+    if (storyPage >= 2) {completeCardReveal();return;}
+    storyPage += 1; renderStoryPage();
+  });
+  $('storySkip').addEventListener('click', completeCardReveal);
+}
+
 function bindEvents() {
+  bindStoryEditor();
+  bindMotionExperience();
   $('languageSelect').addEventListener('change', event => changeGreetingLanguage(event.target.value));
   $('surpriseTemplate').addEventListener('click', () => {
     const choices = getTemplatesForTheme(wish.theme).filter((preset) => preset.id !== wish.template);
@@ -1037,7 +1340,7 @@ function initFromSharedUrl() {
 function initYear() { const yearEl = $('year'); if (yearEl) yearEl.textContent = String(new Date().getFullYear()); }
 
 function init() {
-  buildThemeCards(); buildGuideLinks(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
+  buildThemeCards(); buildGuideLinks(); buildThemePills(); buildTonePills(); buildFinishPills(); buildRelationOptions(); buildSoundscapeOptions(); bindEvents(); starField(); initYear(); updateInputs(); initMotionExperience(); setPhotoUI(); renderDrafts(); initFromSharedUrl();
   setNetworkStatus(); window.addEventListener('online', setNetworkStatus); window.addEventListener('offline', setNetworkStatus); registerPublicOfflineSupport();
 }
 

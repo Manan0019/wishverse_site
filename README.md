@@ -1,3 +1,7 @@
+# Wishverse — Phase 11 Complete Cumulative Source
+
+**Contains everything from Phase 10 plus the Phase 11 Cinematic Storybook.** See `PHASE11_RELEASE_NOTES.md` and `DOWNLOAD_HELP.md`.
+
 # Wishverse — Phase 9: Share Studio & QR Invitations
 
 A responsive, static, no-account greeting platform for `greetings.mananbhayani.online`. **Not yet deployed**. This release builds on Phase 7 and keeps all prior functionality intact.
@@ -64,3 +68,26 @@ See `DEPLOYMENT.md`, `LAUNCH_CHECKLIST.md`, `MEDIA_LINK_ARCHITECTURE.md` and `RE
 ## Release transparency
 
 Still a static, unhosted prototype until the owner connects Cloudflare and the DNS name. Native sharing must be checked on actual Android/iPhone browsers after HTTPS deployment. Personalized QR codes are only useful once the greeting subdomain is live; before then they point to a not-yet-hosted domain. AdSense is not installed.
+
+## Phase 10 — Motion Studio and Following Preview
+
+The core card-preview UX has been rebuilt around a real desktop sticky preview and a mobile live thumbnail.
+
+- **Desktop (>= 961px):** The entire preview panel stays visible next to the long form, across the top, message, and bottom controls. It adapts the card scale to the viewport height, reserving space for the Focus and Magic buttons and full sender signature.
+- **Mobile (< 961px):** A fixed, live-updating mini card dock appears only while editing and when the full card is offscreen. It hides when the actual preview enters view, on dialogs, and outside the studio. Expand opens a full focus modal.
+- **Full-screen focus:** Moves the original `#wishCard` DOM node into a dialog and restores it on close. Keyboard Escape / tab loop and scrollable small-screen content supported.
+- **Motion moods:** Serene, Cinematic, Celebrate. The selected mood is encoded in the share link and restored on recipient opening, with reduced-motion support.
+- **Signature seals:** Star, Heart, Bloom, Moon. Visible on the live preview, opened recipient card, 1080×1350 PNG, and standalone multimedia keepsake.
+- **Motion polish:** Pointer-responsive card depth, ambient occasion motifs, template transitions, sparkle bursts, gallery lift, gradient shimmer, recipient reveals, and interactive CTA states. Continuous animations are only decorative.
+
+### Run and test
+
+```bash
+python -m http.server 5173
+npm test
+npm run audit
+```
+
+For isolated browser regression runs, execute `python3 scripts/phase10-browser-qa.py` or the narrower variants in `scripts/`. These browser checks render from an in-memory preview and do not call the public domain.
+
+**Not yet public:** DNS, Cloudflare account connection, physical-phone sharing QA, AdSense approval, and legal/support setup are still required.

@@ -1,6 +1,7 @@
 import { getTheme, getTone, getArtUrl } from '../data/themes.js';
 import { getTemplate } from '../data/templates.js';
 import { sanitizeWish } from './share.js';
+import { sealSymbol } from './motion.js';
 import { greetingFor } from '../data/i18n.js';
 
 const W = 1080;
@@ -211,6 +212,20 @@ export async function downloadWishPng(input, photoData = null) {
   }
   centered(c, `With love, ${wish.from}`, 1208, 'italic 39px Georgia,serif', ink, 830);
   centered(c, `${tone.label.toUpperCase()}   /   ${wish.finish.toUpperCase()}   /   ${preset.name.toUpperCase()}`, 1250, '700 18px "Space Grotesk",sans-serif', faint, 790);
+
+  // Phase 10 signature seal: consistent in on-screen card and PNG.
+  c.save();
+  const sealX = 880, sealY = 1182;
+  const wax = c.createLinearGradient(sealX - 34,sealY - 34,sealX + 34,sealY + 34);
+  wax.addColorStop(0,'#fff1ce');wax.addColorStop(1,'#c39265');
+  c.fillStyle=wax;c.shadowColor='#00000044';c.shadowBlur=12;
+  c.beginPath();c.arc(sealX,sealY,38,0,Math.PI*2);c.fill();
+  c.shadowBlur=0;c.strokeStyle='#9f704b';c.lineWidth=2;
+  c.beginPath();c.arc(sealX,sealY,32,0,Math.PI*2);c.stroke();
+  c.textAlign='center';c.textBaseline='middle';c.fillStyle='#573448';
+  c.font='bold 34px "DejaVu Sans",Georgia,serif';
+  c.fillText(sealSymbol(wish.seal),sealX,sealY+2,48);
+  c.restore();
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
   if (!blob) throw new Error('PNG generation failed');

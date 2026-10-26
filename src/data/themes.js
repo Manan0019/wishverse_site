@@ -156,10 +156,16 @@ export const DEFAULT_WISH = {
   relation: 'Best Friend',
   tone: 'heartfelt',
   finish: 'radiance',
+  motion: 'cinematic',
+  seal: 'star',
   hideMemory: true,
   secret: true,
   particles: true,
-  soundscape: 'starlight'
+  soundscape: 'starlight',
+  storyEnabled: false,
+  storySpark: '',
+  storyMoment: '',
+  storyPromise: ''
 };
 
 export function getTheme(id) {

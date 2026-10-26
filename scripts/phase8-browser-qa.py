@@ -8,7 +8,7 @@ ART={p.stem:'data:image/svg+xml;base64,'+base64.b64encode(p.read_bytes()).decode
 html=(ROOT/'index.html').read_text();css=(ROOT/'src/styles.css').read_text()
 for name,url in ART.items():html=html.replace(f'/assets/art/{name}.svg',url)
 parts=[]
-for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/main.js']:
+for filename in ['src/data/themes.js','src/data/templates.js','src/data/i18n.js','src/lib/soundscapes.js','src/lib/motion.js','src/lib/storybook.js','src/lib/share.js','src/lib/drafts.js','src/lib/memory.js','src/lib/download.js','src/lib/qr-vendor.js','src/lib/share-studio.js','src/main.js']:
     code=(ROOT/filename).read_text()
     code=re.sub(r'^import\s+.*?;\s*$', '', code,flags=re.M)
     code=re.sub(r'\bexport\s+(?=(const|function|async function|class|let)\b)', '', code)

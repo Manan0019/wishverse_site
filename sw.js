@@ -3,13 +3,13 @@
  * Legacy ?wish= links are explicitly excluded from storage.
  * Uploaded photos, audio blobs, downloadable cards and local drafts are NOT cached.
  */
-const VERSION = 'wishverse-public-v9';
+const VERSION = 'wishverse-public-v11';
 const CACHE = `${VERSION}-cache`;
 const SHELL = [
   '/', '/offline.html', '/site.webmanifest', '/favicon.svg',
   '/src/styles.css', '/src/main.js',
   '/src/data/themes.js', '/src/data/templates.js', '/src/data/i18n.js',
-  '/src/lib/share.js', '/src/lib/download.js', '/src/lib/drafts.js',
+  '/src/lib/share.js', '/src/lib/storybook.js', '/src/lib/download.js', '/src/lib/drafts.js', '/src/lib/motion.js',
   '/src/lib/soundscapes.js', '/src/lib/memory.js',
   '/src/lib/share-studio.js', '/src/lib/qr-vendor.js',
   '/assets/art/birthday.svg', '/assets/art/anniversary.svg', '/assets/art/diwali.svg',
